@@ -83,6 +83,16 @@ class SchedulerTests(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(result["status"], "success")
                     self.assertIsNone(result["error"])
                     self.assertIn(result["worker_id"], range(1, concurrency + 1))
+                    self.assertTrue({
+                        "request_id", "task_id", "step_id", "response", "status",
+                        "timing_metadata", "token_usage",
+                    }.issubset(result))
+                    timing = result["timing_metadata"]
+                    self.assertTrue({
+                        "queue_entry_time", "execution_start_time", "execution_finish_time",
+                    }.issubset(timing))
+                    self.assertNotIn("dispatch_time", timing)
+                    self.assertNotIn("finish_time", timing)
                     json.dumps(result)
                 self.assertIsNone(scheduler.get_status("req-0"))
                 await scheduler.shutdown()
@@ -106,7 +116,7 @@ class SchedulerTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(timing["api_time_ms"], 4000)
         self.assertEqual(timing["total_time_ms"], 8000)
         times = [datetime.fromisoformat(timing[key].replace("Z", "+00:00"))
-                 for key in ("queue_entry_time", "dispatch_time", "finish_time")]
+                 for key in ("queue_entry_time", "execution_start_time", "execution_finish_time")]
         self.assertEqual(times, sorted(times))
 
     async def test_failure_timeout_and_invalid_backend_do_not_lose_worker(self):
@@ -161,7 +171,7 @@ class SchedulerTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(all(r["status"] == "cancelled" for r in results))
         for result in results[2:]:
             self.assertIsNone(result["worker_id"])
-            self.assertIsNone(result["timing_metadata"]["dispatch_time"])
+            self.assertIsNone(result["timing_metadata"]["execution_start_time"])
             self.assertEqual(result["timing_metadata"]["api_time_ms"], 0)
         self.assertEqual(backend.active, 0)
         self.assertEqual(scheduler._pending, {})

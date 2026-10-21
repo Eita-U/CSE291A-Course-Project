@@ -10,8 +10,8 @@ RequestStatus = Literal["success", "failed", "timeout", "cancelled"]
 
 class TimingMetadata(TypedDict):
     queue_entry_time: str
-    dispatch_time: str | None
-    finish_time: str
+    execution_start_time: str | None
+    execution_finish_time: str
     queue_time_ms: float
     api_time_ms: float
     total_time_ms: float

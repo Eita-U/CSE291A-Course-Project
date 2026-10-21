@@ -124,8 +124,8 @@ class FIFOScheduler:
             "worker_id": item.worker_id,
             "timing_metadata": {
                 "queue_entry_time": item.queued_utc,
-                "dispatch_time": item.dispatched_utc,
-                "finish_time": finished_utc,
+                "execution_start_time": item.dispatched_utc,
+                "execution_finish_time": finished_utc,
                 "queue_time_ms": ((dispatch if dispatch is not None else finished_at) - item.queued_at) * 1000,
                 "api_time_ms": 0.0 if dispatch is None else (finished_at - dispatch) * 1000,
                 "total_time_ms": (finished_at - item.queued_at) * 1000,

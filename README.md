@@ -46,6 +46,9 @@ idempotent before shutdown.
 
 `submit` accepts a dictionary or `InferenceRequest` with these fields:
 
+The team's Task 2 contract is authoritative: `step_id` is required even though
+the abbreviated Task 3 note omits it.
+
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `request_id` | nonempty string | Unique among outstanding requests |
@@ -102,8 +105,8 @@ Every accepted request returns a JSON-compatible dictionary:
   "worker_id": 1,
   "timing_metadata": {
     "queue_entry_time": "2026-10-21T20:00:00Z",
-    "dispatch_time": "2026-10-21T20:00:00.150Z",
-    "finish_time": "2026-10-21T20:00:02Z",
+    "execution_start_time": "2026-10-21T20:00:00.150Z",
+    "execution_finish_time": "2026-10-21T20:00:02Z",
     "queue_time_ms": 150.0,
     "api_time_ms": 1850.0,
     "total_time_ms": 2000.0
@@ -120,7 +123,15 @@ outstanding work, and returns `None` after completion or for an unknown ID.
 The scheduler retains no completed-result history; the runner should persist
 returned records for evaluation.
 
-UTC timestamps support tracing. Durations use `time.perf_counter()`:
+The plan's required timing fields are `queue_entry_time`,
+`execution_start_time`, and `execution_finish_time`, all UTC timestamps.
+`execution_start_time` marks scheduler dispatch into the backend;
+`execution_finish_time` marks completion, failure, timeout, or cancellation.
+They do not identify model-only GPU execution boundaries. The old names
+`dispatch_time` and `finish_time` are not emitted.
+
+`worker_id`, `error`, and the three duration fields are additional diagnostic
+fields beyond the plan's required contract. Durations use `time.perf_counter()`:
 
 | Metric | Definition |
 | --- | --- |
@@ -129,7 +140,7 @@ UTC timestamps support tracing. Durations use `time.perf_counter()`:
 | `total_time_ms` | Finish minus queue entry |
 
 Dispatch marks entry into backend processing, not the start of model computation.
-For an aborted queued request, `worker_id` and `dispatch_time` are `null`, API
+For an aborted queued request, `worker_id` and `execution_start_time` are `null`, API
 time is zero, and queue time equals total time until cancellation. Aborted
 running requests retain dispatch and worker metadata.
 
