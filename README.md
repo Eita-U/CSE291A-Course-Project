@@ -15,6 +15,24 @@ python3 -m unittest discover -v
 python3 -m examples.basic_usage
 ```
 
+## FIFO microbenchmarks (Task 3)
+
+Workloads, dummy agents, request/task traces, and plots sit **on top of**
+`FIFOScheduler`. The scheduler is not modified. Default runs use
+`WorkloadMockLLM` on the local event loop: no GPU, no Qwen process, no AWS
+instance. Peak memory is **process RSS**, not inference/GPU memory. Swap in a
+real `LLMBackend` factory when the HTTP inference server exists.
+
+Python **3.11+**. Tests and the scheduler use the standard library. Graphs need
+matplotlib (`pip install -r requirements-bench.txt`). From the repository root:
+
+```bash
+python3 -m unittest discover -v
+python3 -m examples.basic_usage
+python3 -m examples.workload_run
+python3 -m examples.run_microbenchmarks --quick
+python3 -m examples.run_microbenchmarks --out results/microbenchmarks
+
 ## Scheduler interface
 
 ```python
