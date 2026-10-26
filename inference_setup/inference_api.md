@@ -7,10 +7,10 @@ The server provides an OpenAI-compatible API.
 
 ## 1. Start the server
 
-From the project root:
+From the project root on EC2:
 
 ```bash
-./inference_setup/start_server.sh
+bash inference_setup/start_server.sh
 ```
 
 By default, the API is available at:
@@ -19,12 +19,12 @@ By default, the API is available at:
 http://127.0.0.1:8080
 ```
 
-All examples below assume the Python code runs on the same EC2 instance as the server.
+The examples work either on the EC2 instance or on a laptop with an SSH tunnel established to port 8080.
 
 Install the Python dependency:
 
 ```bash
-uv pip install requests
+python -m pip install -r inference_setup/requirements.txt
 ```
 
 ## 2. Basic Question
@@ -115,7 +115,7 @@ message = response.json()["choices"][0]["message"]
 print(json.dumps(message.get("tool_calls", []), indent=2))
 ```
 
-Expected tool call (simplified):
+Expected single entry in the returned `tool_calls` list (simplified):
 
 ```json
 {
@@ -136,9 +136,14 @@ The model only generates the tool call. It does not execute the Python function.
 def add(a, b):
     return a + b
 
+if not message.get("tool_calls"):
+    raise RuntimeError("Model did not return a tool call")
+
 tool_call = message["tool_calls"][0]
 arguments = json.loads(tool_call["function"]["arguments"])
 
+if tool_call["function"]["name"] != "add":
+    raise ValueError("Unexpected tool name")
 result = add(**arguments)
 
 messages.append(message)
@@ -173,18 +178,4 @@ The final answer should communicate that the result is 42.
 - **`tool_choice="auto"`:** Allows the model to decide whether to request a tool.
 - **`--jinja`:** Keep this enabled in `start_server.sh` for the model's tool-calling chat template.
 - **Security:** Only execute explicitly allowed functions. Validate tool names and arguments before calling them.
-- **Access:** The server currently binds to `127.0.0.1`, so teammates must run requests on EC2 or use SSH port forwarding.
-
-## 5. Access from Your Local Computer
-
-If the server runs on EC2, create an SSH tunnel from your local terminal:
-
-```bash
-ssh -N -L 8080:127.0.0.1:8080 cse291a
-```
-
-Then use the same API URL in your local Python code:
-
-```
-http://127.0.0.1:8080/v1/chat/completions
-```
+- **Access:** The server currently binds to `127.0.0.1`, so you must run requests on EC2 or use SSH port forwarding.
