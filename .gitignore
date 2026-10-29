@@ -2,5 +2,8 @@ __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
+llama.cpp
+models
 results/
 .idea/
+
