@@ -25,7 +25,13 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
-from workload.benchmarks import BenchConfig, BackendFactory, quick_config, run_microbenchmarks
+from workload.benchmarks import (
+    BenchConfig,
+    BackendFactory,
+    quick_config,
+    run_microbenchmarks,
+    suite_summary_row,
+)
 from workload.plots import generate_plots
 
 DEFAULT_QWEN_ENDPOINT = "http://127.0.0.1:8080/v1/chat/completions"
@@ -94,6 +100,40 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Do not append /no_think to Qwen prompts (Qwen3 reasoning tokens count toward max_tokens).",
     )
+    parser.add_argument(
+        "--run-id",
+        default=None,
+        help="Stable ID for this invocation; supply the same value to independent EC2 monitoring.",
+    )
+    parser.add_argument(
+        "--trials",
+        type=int,
+        default=1,
+        help="Repeated measured trials (default 1). Phase 1 reports should use 3–5.",
+    )
+    parser.add_argument(
+        "--warmup",
+        action="store_true",
+        help="Run unmeasured warm-up requests before each trial's measured suites (disabled by default).",
+    )
+    parser.add_argument(
+        "--warmup-requests",
+        type=int,
+        default=None,
+        help="Warm-up request count when --warmup is set.",
+    )
+    parser.add_argument(
+        "--long-context-tokens",
+        type=int,
+        default=None,
+        help="Whitespace token budget for runnable long prompts (default 512, not 2048).",
+    )
+    parser.add_argument(
+        "--oversize-context-tokens",
+        type=int,
+        default=None,
+        help="Whitespace token budget for the oversize_context admission suite (default 2048).",
+    )
     return parser.parse_args(argv)
 
 
@@ -147,23 +187,44 @@ def qwen_backend_factory(
     return factory
 
 
-def build_config(args: argparse.Namespace) -> BenchConfig:
+def build_config(args: argparse.Namespace, *, model: str | None = None) -> BenchConfig:
     overrides: dict[str, Any] = {
         "seed": args.seed,
         "backend_label": args.backend,
+        "run_id": args.run_id,
+        "n_trials": args.trials,
+        "warmup_enabled": args.warmup,
+        "command_line": tuple(sys.argv),
+        "endpoint": args.endpoint if args.backend == "qwen" else None,
+        "model": model,
+        "backend_timeout_s": args.backend_timeout if args.backend == "qwen" else None,
+        "api_style": args.api_style if args.backend == "qwen" else None,
     }
+    if args.warmup_requests is not None:
+        overrides["warmup_requests"] = args.warmup_requests
     if args.timeout is not None:
         overrides["request_timeout_s"] = args.timeout
     elif args.backend == "qwen":
         overrides["request_timeout_s"] = DEFAULT_QWEN_TIMEOUT_S
+    if args.oversize_context_tokens is not None:
+        overrides["oversize_context_tokens"] = args.oversize_context_tokens
     if args.quick:
-        return quick_config(args.out, **overrides)
-    return BenchConfig(out_dir=args.out, **overrides)
+        config = quick_config(args.out, **overrides)
+    else:
+        config = BenchConfig(out_dir=args.out, **overrides)
+    if args.long_context_tokens is not None:
+        current = dict(config.context_tokens or {})
+        if "short" not in current:
+            current["short"] = 12 if args.quick else 128
+        current["long"] = args.long_context_tokens
+        config = BenchConfig(**{**config.__dict__, "context_tokens": current})
+    return config
 
 
 async def _main(argv: list[str] | None = None) -> None:
     args = parse_args(argv)
     factory: BackendFactory | None = None
+    model: str | None = None
     if args.backend == "qwen":
         model = args.model
         try:
@@ -191,26 +252,20 @@ async def _main(argv: list[str] | None = None) -> None:
             timeout_s=args.backend_timeout,
             disable_think=not args.allow_think,
         )
-    config = build_config(args)
+    config = build_config(args, model=model)
     report = await run_microbenchmarks(config, backend_factory=factory)
     paths = generate_plots(report, args.out / "graphs")
     summary = {
         "out_dir": str(args.out.resolve()),
+        "run_id": report.get("run_id"),
         "backend": args.backend,
         "endpoint": args.endpoint if args.backend == "qwen" else None,
-        "suites": [
-            {
-                "name": suite["name"],
-                "concurrency": suite["concurrency"],
-                "n_requests": suite["metrics"]["n_requests"],
-                "n_tasks": suite["metrics"]["n_tasks"],
-                "throughput_requests_per_s": suite["metrics"]["throughput_requests_per_s"],
-                "request_total_ms_p95": suite["metrics"]["request_total_ms"]["p95"],
-                "task_completion_ms_p95": suite["metrics"]["task_completion_ms"]["p95"],
-                "peak_rss_mib": suite["peak_rss_bytes"] / (1024 * 1024),
-            }
-            for suite in report["suites"]
-        ],
+        "model": config.model,
+        "n_trials": config.n_trials,
+        "clock_note": report.get("clock_note"),
+        "inference_memory_note": report.get("inference_memory_note"),
+        "suites": [suite_summary_row(suite) for suite in report["suites"]],
+        "aggregates": report.get("aggregates"),
         "graphs": [str(path) for path in paths],
     }
     (args.out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")

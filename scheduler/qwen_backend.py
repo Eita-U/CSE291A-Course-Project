@@ -16,6 +16,18 @@ from typing import Any, Literal
 
 import httpx
 
+_ERROR_BODY_LIMIT = 500
+
+
+def _http_status_error_message(exc: httpx.HTTPStatusError) -> str:
+    status = exc.response.status_code
+    body = " ".join((exc.response.text or "").split())
+    if len(body) > _ERROR_BODY_LIMIT:
+        body = body[:_ERROR_BODY_LIMIT] + "..."
+    if body:
+        return f"Qwen API returned HTTP {status}: {body}"
+    return f"Qwen API returned HTTP {status}"
+
 
 class QwenHTTPBackend:
     """HTTP backend implementing ``async generate(request) -> dict``.
@@ -85,7 +97,7 @@ class QwenHTTPBackend:
         except httpx.TimeoutException as exc:
             raise TimeoutError("Qwen HTTP request timed out") from exc
         except httpx.HTTPStatusError as exc:
-            raise RuntimeError(f"Qwen API returned HTTP {exc.response.status_code}") from exc
+            raise RuntimeError(_http_status_error_message(exc)) from exc
         except httpx.RequestError as exc:
             raise RuntimeError(f"Qwen API connection error: {type(exc).__name__}") from exc
 
