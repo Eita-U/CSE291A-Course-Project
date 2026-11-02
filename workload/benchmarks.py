@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import subprocess
 import sys
 import time
 from collections import Counter
@@ -35,21 +36,24 @@ class BenchConfig:
     response_tokens: Mapping[str, int] | None = None
     step_counts: Sequence[int] = (1, 3)
     tool_delays_s: Sequence[float] = (0.0, 0.05)
+    backend_label: str = "mock"
 
 
-def quick_config(out_dir: Path) -> BenchConfig:
-    return BenchConfig(
-        out_dir=out_dir,
-        concurrency_levels=(1, 2),
-        mixed_concurrency=2,
-        isolated_tasks=3,
-        mixed_tasks_per_profile=1,
-        context_tokens={"short": 12, "long": 24},
-        response_tokens={"short": 6, "long": 12},
-        step_counts=(1, 2),
-        tool_delays_s=(0.0, 0.02),
-        request_timeout_s=5.0,
-    )
+def quick_config(out_dir: Path, **overrides: Any) -> BenchConfig:
+    kwargs: dict[str, Any] = {
+        "out_dir": out_dir,
+        "concurrency_levels": (1, 2),
+        "mixed_concurrency": 2,
+        "isolated_tasks": 3,
+        "mixed_tasks_per_profile": 1,
+        "context_tokens": {"short": 12, "long": 24},
+        "response_tokens": {"short": 6, "long": 12},
+        "step_counts": (1, 2),
+        "tool_delays_s": (0.0, 0.02),
+        "request_timeout_s": 5.0,
+    }
+    kwargs.update(overrides)
+    return BenchConfig(**kwargs)
 
 
 def default_mock_backend() -> WorkloadMockLLM:
@@ -93,7 +97,6 @@ def current_rss_bytes() -> int:
     if statm.exists():
         pages = int(statm.read_text().split()[1])
         return pages * os.sysconf("SC_PAGE_SIZE")
-    import subprocess
     out = subprocess.check_output(["ps", "-o", "rss=", "-p", str(os.getpid())], text=True)
     return int(out.strip() or "0") * 1024
 
@@ -146,9 +149,21 @@ def _suite_dict(
     return payload
 
 
+async def _close_backend(backend: Any) -> None:
+    closer = getattr(backend, "aclose", None)
+    if not callable(closer):
+        return
+    result = closer()
+    if asyncio.iscoroutine(result):
+        await result
+
+
 async def _sample_rss(stop: asyncio.Event, samples: list[int]) -> None:
     while not stop.is_set():
-        samples.append(current_rss_bytes())
+        try:
+            samples.append(current_rss_bytes())
+        except (OSError, ValueError, subprocess.SubprocessError):
+            pass
         try:
             await asyncio.wait_for(stop.wait(), timeout=0.05)
         except TimeoutError:
@@ -177,10 +192,14 @@ async def _run_suite(
     stop = asyncio.Event()
     sampler = asyncio.create_task(_sample_rss(stop, samples))
     started = time.perf_counter()
-    async with FIFOScheduler(
-        backend_factory(), concurrency=concurrency, request_timeout_s=request_timeout_s,
-    ) as scheduler:
-        await AgentTaskRunner(scheduler, recorder).run_tasks(specs)
+    backend = backend_factory()
+    try:
+        async with FIFOScheduler(
+            backend, concurrency=concurrency, request_timeout_s=request_timeout_s,
+        ) as scheduler:
+            await AgentTaskRunner(scheduler, recorder).run_tasks(specs)
+    finally:
+        await _close_backend(backend)
     wall = time.perf_counter() - started
     stop.set()
     await sampler
@@ -312,6 +331,8 @@ async def run_microbenchmarks(
             "response_tokens": dict(resp),
             "step_counts": list(config.step_counts),
             "tool_delays_s": list(config.tool_delays_s),
+            "backend_label": config.backend_label,
+            "request_timeout_s": config.request_timeout_s,
         },
         "suites": suites,
     }

@@ -20,11 +20,16 @@ python3 -m examples.basic_usage
 Workloads, dummy agents, request/task traces, and plots sit **on top of**
 `FIFOScheduler`. The scheduler is not modified. Default runs use
 `WorkloadMockLLM` on the local event loop: no GPU, no Qwen process, no AWS
-instance. Peak memory is **process RSS**, not inference/GPU memory. Swap in a
-real `LLMBackend` factory when the HTTP inference server exists.
+instance. Peak memory is **process RSS**, not inference/GPU memory.
+
+To run against the real Qwen server (already started on the GPU instance, or
+SSH-tunneled to `127.0.0.1:8080`), pass `--backend qwen`. That injects
+`QwenHTTPBackend` through the existing `backend_factory`; it does not start
+the model process.
 
 Python **3.11+**. Tests and the scheduler use the standard library. Graphs need
-matplotlib (`pip install -r requirements-bench.txt`). From the repository root:
+matplotlib (`pip install -r requirements-bench.txt`). Real-model runs also need
+httpx (`pip install -r requirements-backend.txt`). From the repository root:
 
 ```bash
 python3 -m unittest discover -v
@@ -32,6 +37,8 @@ python3 -m examples.basic_usage
 python3 -m examples.workload_run
 python3 -m examples.run_microbenchmarks --quick
 python3 -m examples.run_microbenchmarks --out results/microbenchmarks
+python3 -m examples.run_microbenchmarks --backend qwen --quick
+python3 -m examples.run_microbenchmarks --backend qwen --out results/qwen
 
 ## Scheduler interface
 
