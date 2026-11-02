@@ -14,13 +14,24 @@ from typing import Iterable, Literal, Mapping, Sequence
 
 ContextClass = Literal["short", "long"]
 ResponseClass = Literal["short", "long"]
+PrefixMode = Literal["unique", "shared"]
+ContextMode = Literal["fresh", "retained"]
 
 SHORT_CONTEXT_TOKENS = 128
-LONG_CONTEXT_TOKENS = 2048
+# Whitespace pad for runnable "long" prompts. phase1-fifo-002 showed ~1.82
+# tokenizer tokens per whitespace word (128 words -> 233 tokens). llama.cpp
+# --ctx-size 4096 --parallel 2 typically leaves ~2048 KV tokens per slot, so
+# 2048 words (~3700 tokenizer tokens) is rejected with HTTP 400. 512 words is
+# ~930 tokenizer tokens and still fits template + max_tokens=256 in one slot.
+LONG_CONTEXT_TOKENS = 512
+# Intentional oversize class for an admission/reject suite, not the mixed matrix.
+OVERSIZE_CONTEXT_TOKENS = 2048
 SHORT_RESPONSE_TOKENS = 32
 LONG_RESPONSE_TOKENS = 256
 DEFAULT_STEP_COUNTS = (1, 3)
 DEFAULT_TOOL_DELAYS_S = (0.0, 0.05)
+PROMPT_TEMPLATE_VERSION = "agent-pad-v1"
+DEFAULT_GENERATION_TEMPERATURE = 0
 
 # Fixed vocabulary so padding is reproducible without a model tokenizer.
 _FILLER = (
@@ -40,6 +51,9 @@ class WorkloadProfile:
     tool_delay_s: float
     context_tokens: int
     max_tokens: int
+    prefix_mode: PrefixMode = "unique"
+    context_mode: ContextMode = "retained"
+    shared_prefix_id: str | None = None
 
     def __post_init__(self) -> None:
         if self.n_steps < 1:
@@ -48,6 +62,10 @@ class WorkloadProfile:
             raise ValueError("token budgets must be positive")
         if self.tool_delay_s < 0:
             raise ValueError("tool_delay_s must be non-negative")
+        if self.prefix_mode not in ("unique", "shared"):
+            raise ValueError("prefix_mode must be 'unique' or 'shared'")
+        if self.context_mode not in ("fresh", "retained"):
+            raise ValueError("context_mode must be 'fresh' or 'retained'")
 
 
 @dataclass(frozen=True)
@@ -86,24 +104,25 @@ def response_token_targets(
     return values
 
 
-def default_matrix(
+def matrix_from_axes(
+    context_tokens: Mapping[str, int],
+    response_tokens: Mapping[str, int],
+    step_counts: Sequence[int],
+    tool_delays_s: Sequence[float],
     *,
-    context_tokens: Mapping[str, int] | None = None,
-    response_tokens: Mapping[str, int] | None = None,
-    step_counts: Sequence[int] = DEFAULT_STEP_COUNTS,
-    tool_delays_s: Sequence[float] = DEFAULT_TOOL_DELAYS_S,
+    prefix_mode: PrefixMode = "unique",
+    context_mode: ContextMode = "retained",
+    name_prefix: str = "",
 ) -> tuple[WorkloadProfile, ...]:
-    """Cartesian product of context, response, step count, and tool delay."""
-    contexts = context_token_targets(context_tokens)
-    responses = response_token_targets(response_tokens)
+    """Cartesian product over exactly the provided axis maps (no implied classes)."""
     profiles: list[WorkloadProfile] = []
-    for context_class, n_ctx in contexts.items():
-        for response_class, n_out in responses.items():
+    for context_class, n_ctx in context_tokens.items():
+        for response_class, n_out in response_tokens.items():
             for n_steps in step_counts:
                 for delay in tool_delays_s:
                     delay_label = "tool" if delay > 0 else "notool"
                     name = (
-                        f"{context_class}_ctx_{response_class}_resp_"
+                        f"{name_prefix}{context_class}_ctx_{response_class}_resp_"
                         f"{n_steps}step_{delay_label}"
                     )
                     profiles.append(WorkloadProfile(
@@ -114,8 +133,34 @@ def default_matrix(
                         tool_delay_s=float(delay),
                         context_tokens=int(n_ctx),
                         max_tokens=int(n_out),
+                        prefix_mode=prefix_mode,
+                        context_mode=context_mode,
                     ))
     return tuple(profiles)
+
+
+def default_matrix(
+    *,
+    context_tokens: Mapping[str, int] | None = None,
+    response_tokens: Mapping[str, int] | None = None,
+    step_counts: Sequence[int] = DEFAULT_STEP_COUNTS,
+    tool_delays_s: Sequence[float] = DEFAULT_TOOL_DELAYS_S,
+) -> tuple[WorkloadProfile, ...]:
+    """Cartesian product of context, response, step count, and tool delay."""
+    return matrix_from_axes(
+        context_token_targets(context_tokens),
+        response_token_targets(response_tokens),
+        step_counts,
+        tool_delays_s,
+    )
+
+
+def generation_settings_for(max_tokens: int) -> dict[str, int]:
+    return {"max_tokens": int(max_tokens), "temperature": DEFAULT_GENERATION_TEMPERATURE}
+
+
+def prompt_digest(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def estimate_tokens(text: str) -> int:
@@ -161,10 +206,17 @@ def generate_task(
     steps: list[StepSpec] = []
     for step_id in range(profile.n_steps):
         delay = profile.tool_delay_s if step_id < profile.n_steps - 1 else 0.0
-        instruction = (
-            f"Task {task_id} step {step_id}: answer using the padded context. "
-            f"Produce about {profile.max_tokens} tokens."
-        )
+        if profile.prefix_mode == "shared":
+            prefix_id = profile.shared_prefix_id or "shared-prefix"
+            instruction = (
+                f"Shared prefix {prefix_id} step {step_id}: answer using the padded context. "
+                f"Produce about {profile.max_tokens} tokens."
+            )
+        else:
+            instruction = (
+                f"Task {task_id} step {step_id}: answer using the padded context. "
+                f"Produce about {profile.max_tokens} tokens."
+            )
         steps.append(StepSpec(
             step_id=step_id,
             context_tokens=profile.context_tokens,
@@ -202,4 +254,7 @@ def generate_workloads(
 
 
 def prompt_rng(spec: AgentTaskSpec, step_id: int) -> random.Random:
+    if spec.profile.prefix_mode == "shared":
+        prefix_id = spec.profile.shared_prefix_id or "shared-prefix"
+        return _stable_rng(spec.seed, prefix_id, spec.profile.context_tokens, step_id)
     return _stable_rng(spec.seed, spec.task_id, step_id)

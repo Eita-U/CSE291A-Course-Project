@@ -16,6 +16,22 @@ def _suite(report: Mapping[str, Any], name: str) -> dict[str, Any]:
     raise KeyError(name)
 
 
+def _suite_or_none(report: Mapping[str, Any], name: str) -> dict[str, Any] | None:
+    try:
+        return _suite(report, name)
+    except KeyError:
+        return None
+
+
+def _peak_rss_mib(suite: Mapping[str, Any]) -> float:
+    raw = suite.get("peak_benchmark_process_rss_bytes")
+    if raw is None:
+        raw = suite.get("peak_rss_bytes") or 0
+    if isinstance(raw, dict):
+        raw = raw.get("median_per_trial") or 0
+    return float(raw) / (1024 * 1024)
+
+
 def _concurrency_suites(report: Mapping[str, Any]) -> list[dict[str, Any]]:
     suites = [s for s in report["suites"] if str(s["name"]).startswith("concurrency_")]
     return sorted(suites, key=lambda s: int(s["concurrency"]))
@@ -161,9 +177,13 @@ def generate_plots(report: Mapping[str, Any], out_dir: Path) -> list[Path]:
 
     iso_resp = _suite(report, "isolated_response")
     resp_tot = _request_metric(iso_resp["requests"], "total_time_ms")
+    sep = (iso_resp.get("metrics") or {}).get("response_length_separation") or {}
+    resp_title = "Isolated response max_tokens (configured)"
+    if sep.get("classes_separated_by_observed_length") is False:
+        resp_title += " — observed lengths not separated"
     fig, ax = plt.subplots()
     bar(ax, list(resp_tot), [sum(v) / len(v) for v in resp_tot.values()],
-        "Mean request time (ms)", "Isolated response length", "#3b6ea5")
+        "Mean request time (ms)", resp_title, "#3b6ea5")
     save(fig, "isolated_response")
 
     iso_steps = _suite(report, "isolated_steps")
@@ -188,11 +208,26 @@ def generate_plots(report: Mapping[str, Any], out_dir: Path) -> list[Path]:
     ax.legend()
     save(fig, "isolated_tool_delay")
 
+    oversize = _suite_or_none(report, "oversize_context")
+    if oversize is not None:
+        fig, ax = plt.subplots()
+        counts = Counter(r["status"] for r in oversize["requests"])
+        bar(ax, list(counts), [counts[k] for k in counts], "Requests",
+            "Oversize-context admission (intentional reject class; not mixed into other suites)",
+            "#8b4c70")
+        save(fig, "oversize_context")
+
     conc = _concurrency_suites(report)
     xs = [s["concurrency"] for s in conc]
     fig, ax = plt.subplots()
-    ax.plot(xs, [s["metrics"]["throughput_requests_per_s"] for s in conc], marker="o", label="requests/s")
-    ax.plot(xs, [s["metrics"]["throughput_tasks_per_s"] for s in conc], marker="s", label="tasks/s")
+    ax.plot(xs, [s["metrics"]["throughput_requests_per_s"] for s in conc], marker="o", label="all requests/s")
+    ax.plot(xs, [s["metrics"]["throughput_tasks_per_s"] for s in conc], marker="s", label="all tasks/s")
+    ok_req = [
+        (s.get("metrics") or {}).get("successful_only", {}).get("throughput_requests_per_s")
+        for s in conc
+    ]
+    if all(v is not None for v in ok_req):
+        ax.plot(xs, ok_req, marker="^", label="successful requests/s")
     ax.set_xlabel("Scheduler concurrency")
     ax.set_ylabel("Throughput")
     ax.set_title("Throughput vs concurrency")
@@ -219,11 +254,24 @@ def generate_plots(report: Mapping[str, Any], out_dir: Path) -> list[Path]:
     save(fig, "concurrency_queue_time")
 
     fig, ax = plt.subplots()
-    ax.plot(xs, [s["peak_rss_bytes"] / (1024 * 1024) for s in conc], marker="o")
+    ax.plot(xs, [_peak_rss_mib(s) for s in conc], marker="o")
     ax.set_xlabel("Scheduler concurrency")
-    ax.set_ylabel("Peak process RSS (MiB)")
-    ax.set_title("Peak process memory vs concurrency (not GPU)")
+    ax.set_ylabel("Peak benchmark-process RSS (MiB)")
+    ax.set_title("Peak benchmark-process RSS vs concurrency (not model/GPU/server memory)")
     save(fig, "concurrency_peak_rss")
+
+    for name, title in (
+        ("prefix_reuse", "Matched unique vs shared long prefix (timing only; not a cache-hit claim)"),
+        ("retained_context", "Matched retained vs fresh context (length-matched; not a KV-reuse claim)"),
+    ):
+        extra = _suite_or_none(report, name)
+        if extra is None:
+            continue
+        tot = _request_metric(extra["requests"], "total_time_ms")
+        fig, ax = plt.subplots()
+        bar(ax, list(tot), [sum(v) / len(v) for v in tot.values()],
+            "Mean request time (ms)", title, "#5b4c8b")
+        save(fig, name)
 
     fig, ax = plt.subplots()
     ax.plot(xs, [s["metrics"]["task_completion_ms"]["p95"] for s in conc], marker="o")
@@ -231,6 +279,60 @@ def generate_plots(report: Mapping[str, Any], out_dir: Path) -> list[Path]:
     ax.set_ylabel("Task completion p95 (ms)")
     ax.set_title("Task completion tail vs concurrency")
     save(fig, "concurrency_task_p95")
+
+    aggregates = report.get("aggregates") or {}
+    n_trials = int(report.get("n_trials") or 1)
+    if n_trials > 1 and aggregates:
+        conc_pairs = [(s["name"], s["concurrency"]) for s in conc if s["name"] in aggregates]
+        if conc_pairs:
+
+            def _bundle(name: str, *path: str) -> Mapping[str, Any]:
+                node: Any = aggregates[name]
+                for key in path:
+                    node = node[key]
+                return node
+
+            def _med(bundle: Mapping[str, Any]) -> float:
+                return float(bundle.get("median_per_trial") or 0)
+
+            def _err(bundle: Mapping[str, Any]) -> tuple[float, float]:
+                median = _med(bundle)
+                low = float(bundle["min"]) if bundle.get("min") is not None else median
+                high = float(bundle["max"]) if bundle.get("max") is not None else median
+                return median - low, high - median
+
+            xs_a = [concurrency for _, concurrency in conc_pairs]
+            fig, ax = plt.subplots()
+            tput = [_bundle(name, "throughput_requests_per_s") for name, _ in conc_pairs]
+            err = list(zip(*[_err(b) for b in tput]))
+            ax.errorbar(xs_a, [_med(b) for b in tput], yerr=err, marker="o", capsize=4,
+                        label="median per-trial requests/s")
+            ax.set_xlabel("Scheduler concurrency")
+            ax.set_ylabel("Throughput")
+            ax.set_title("Median per-trial throughput vs concurrency (min–max)")
+            ax.legend()
+            save(fig, "concurrency_throughput_across_trials")
+
+            fig, ax = plt.subplots()
+            p95 = [_bundle(name, "request_total_ms", "p95") for name, _ in conc_pairs]
+            err = list(zip(*[_err(b) for b in p95]))
+            ax.errorbar(xs_a, [_med(b) for b in p95], yerr=err, marker="s", capsize=4,
+                        label="median per-trial request p95")
+            ax.set_xlabel("Scheduler concurrency")
+            ax.set_ylabel("Request total time (ms)")
+            ax.set_title("Median per-trial request p95 vs concurrency (not pooled p95)")
+            ax.legend()
+            save(fig, "concurrency_tail_latency_across_trials")
+
+            fig, ax = plt.subplots()
+            rss_b = [_bundle(name, "peak_benchmark_process_rss_bytes") for name, _ in conc_pairs]
+            scale = 1024 * 1024
+            err = list(zip(*[(lo / scale, hi / scale) for lo, hi in (_err(b) for b in rss_b)]))
+            ax.errorbar(xs_a, [_med(b) / scale for b in rss_b], yerr=err, marker="o", capsize=4)
+            ax.set_xlabel("Scheduler concurrency")
+            ax.set_ylabel("Peak benchmark-process RSS (MiB)")
+            ax.set_title("Median per-trial benchmark-process RSS (not GPU/server)")
+            save(fig, "concurrency_peak_rss_across_trials")
 
     index = out_dir / "index.html"
     cards = "\n".join(

@@ -6,9 +6,13 @@ From the repository root:
     python3 -m examples.run_microbenchmarks --quick
     python3 -m examples.run_microbenchmarks --out results/microbenchmarks
 
-Uses the mock backend by default so this can run without a GPU. Swap in a
-real LLMBackend factory when the inference server is available. The FIFO
-scheduler is not modified.
+    # Real Qwen (llama.cpp already running, or SSH-tunneled to 127.0.0.1:8080):
+    python3 -m examples.run_microbenchmarks --backend qwen --quick
+    python3 -m examples.run_microbenchmarks --backend qwen --out results/qwen
+
+The scheduler, agent runner, and Qwen HTTP adapter are not modified. Default
+runs use WorkloadMockLLM. --backend qwen injects QwenHTTPBackend as the
+existing backend_factory.
 """
 
 from __future__ import annotations
@@ -16,43 +20,252 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import sys
 from pathlib import Path
+from typing import Any
+from urllib.parse import urlsplit, urlunsplit
 
-from workload.benchmarks import BenchConfig, quick_config, run_microbenchmarks
+from workload.benchmarks import (
+    BenchConfig,
+    BackendFactory,
+    quick_config,
+    run_microbenchmarks,
+    suite_summary_row,
+)
 from workload.plots import generate_plots
 
+DEFAULT_QWEN_ENDPOINT = "http://127.0.0.1:8080/v1/chat/completions"
+DEFAULT_QWEN_TIMEOUT_S = 180.0
 
-def parse_args() -> argparse.Namespace:
+
+class _PromptSuffixBackend:
+    """Microbenchmark-only wrapper; does not change QwenHTTPBackend."""
+
+    def __init__(self, inner: Any, suffix: str) -> None:
+        self._inner = inner
+        self._suffix = suffix
+
+    async def generate(self, request: dict[str, Any]) -> dict[str, Any]:
+        req = dict(request)
+        prompt = str(req.get("prompt") or "")
+        if self._suffix and self._suffix not in prompt:
+            req["prompt"] = f"{prompt} {self._suffix}".strip()
+        return await self._inner.generate(req)
+
+    async def aclose(self) -> None:
+        closer = getattr(self._inner, "aclose", None)
+        if callable(closer):
+            result = closer()
+            if asyncio.iscoroutine(result):
+                await result
+
+
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run FIFO microbenchmarks and plot results")
     parser.add_argument("--out", type=Path, default=Path("results/microbenchmarks"))
     parser.add_argument("--quick", action="store_true", help="Smaller token budgets and fewer tasks")
     parser.add_argument("--seed", type=int, default=0)
-    return parser.parse_args()
-
-
-async def _main() -> None:
-    args = parse_args()
-    config = (
-        quick_config(args.out) if args.quick
-        else BenchConfig(out_dir=args.out, seed=args.seed)
+    parser.add_argument(
+        "--backend",
+        choices=("mock", "qwen"),
+        default="mock",
+        help="mock: local WorkloadMockLLM. qwen: HTTP QwenHTTPBackend (server must already be up).",
     )
-    report = await run_microbenchmarks(config)
+    parser.add_argument(
+        "--endpoint",
+        default=DEFAULT_QWEN_ENDPOINT,
+        help="Exact generate URL for --backend qwen (OpenAI chat completions by default).",
+    )
+    parser.add_argument(
+        "--api-style",
+        choices=("openai", "llama_cpp"),
+        default="openai",
+        help="Must match the running llama.cpp route (see inference_setup/inference_api.md).",
+    )
+    parser.add_argument("--model", default=None, help="Optional model id; auto-detected from /v1/models when omitted")
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=None,
+        help="Scheduler request timeout in seconds. Default 60 (mock) or 180 (qwen).",
+    )
+    parser.add_argument(
+        "--backend-timeout",
+        type=float,
+        default=DEFAULT_QWEN_TIMEOUT_S,
+        help="HTTP client timeout for --backend qwen.",
+    )
+    parser.add_argument(
+        "--allow-think",
+        action="store_true",
+        help="Do not append /no_think to Qwen prompts (Qwen3 reasoning tokens count toward max_tokens).",
+    )
+    parser.add_argument(
+        "--run-id",
+        default=None,
+        help="Stable ID for this invocation; supply the same value to independent EC2 monitoring.",
+    )
+    parser.add_argument(
+        "--trials",
+        type=int,
+        default=1,
+        help="Repeated measured trials (default 1). Phase 1 reports should use 3–5.",
+    )
+    parser.add_argument(
+        "--warmup",
+        action="store_true",
+        help="Run unmeasured warm-up requests before each trial's measured suites (disabled by default).",
+    )
+    parser.add_argument(
+        "--warmup-requests",
+        type=int,
+        default=None,
+        help="Warm-up request count when --warmup is set.",
+    )
+    parser.add_argument(
+        "--long-context-tokens",
+        type=int,
+        default=None,
+        help="Whitespace token budget for runnable long prompts (default 512, not 2048).",
+    )
+    parser.add_argument(
+        "--oversize-context-tokens",
+        type=int,
+        default=None,
+        help="Whitespace token budget for the oversize_context admission suite (default 2048).",
+    )
+    return parser.parse_args(argv)
+
+
+def _base_url(endpoint: str) -> str:
+    parts = urlsplit(endpoint)
+    return urlunsplit((parts.scheme, parts.netloc, "", "", "")).rstrip("/")
+
+
+async def _discover_qwen_model(endpoint: str, timeout_s: float) -> str | None:
+    import httpx
+
+    base = _base_url(endpoint)
+    async with httpx.AsyncClient(timeout=min(timeout_s, 15.0)) as client:
+        health = await client.get(f"{base}/health")
+        health.raise_for_status()
+        try:
+            models_response = await client.get(f"{base}/v1/models")
+            models_response.raise_for_status()
+        except httpx.HTTPError:
+            return None
+        payload = models_response.json()
+        models = payload.get("data", []) if isinstance(payload, dict) else []
+        if models and isinstance(models[0].get("id"), str):
+            return models[0]["id"]
+    return None
+
+
+def qwen_backend_factory(
+    *,
+    endpoint: str,
+    api_style: str,
+    model: str | None,
+    timeout_s: float,
+    disable_think: bool,
+    client: Any = None,
+) -> BackendFactory:
+    from scheduler.qwen_backend import QwenHTTPBackend
+
+    def factory() -> Any:
+        backend: Any = QwenHTTPBackend(
+            endpoint,
+            api_style=api_style,  # type: ignore[arg-type]
+            model=model,
+            timeout_s=timeout_s,
+            client=client,
+        )
+        if disable_think:
+            backend = _PromptSuffixBackend(backend, "/no_think")
+        return backend
+
+    return factory
+
+
+def build_config(args: argparse.Namespace, *, model: str | None = None) -> BenchConfig:
+    overrides: dict[str, Any] = {
+        "seed": args.seed,
+        "backend_label": args.backend,
+        "run_id": args.run_id,
+        "n_trials": args.trials,
+        "warmup_enabled": args.warmup,
+        "command_line": tuple(sys.argv),
+        "endpoint": args.endpoint if args.backend == "qwen" else None,
+        "model": model,
+        "backend_timeout_s": args.backend_timeout if args.backend == "qwen" else None,
+        "api_style": args.api_style if args.backend == "qwen" else None,
+    }
+    if args.warmup_requests is not None:
+        overrides["warmup_requests"] = args.warmup_requests
+    if args.timeout is not None:
+        overrides["request_timeout_s"] = args.timeout
+    elif args.backend == "qwen":
+        overrides["request_timeout_s"] = DEFAULT_QWEN_TIMEOUT_S
+    if args.oversize_context_tokens is not None:
+        overrides["oversize_context_tokens"] = args.oversize_context_tokens
+    if args.quick:
+        config = quick_config(args.out, **overrides)
+    else:
+        config = BenchConfig(out_dir=args.out, **overrides)
+    if args.long_context_tokens is not None:
+        current = dict(config.context_tokens or {})
+        if "short" not in current:
+            current["short"] = 12 if args.quick else 128
+        current["long"] = args.long_context_tokens
+        config = BenchConfig(**{**config.__dict__, "context_tokens": current})
+    return config
+
+
+async def _main(argv: list[str] | None = None) -> None:
+    args = parse_args(argv)
+    factory: BackendFactory | None = None
+    model: str | None = None
+    if args.backend == "qwen":
+        model = args.model
+        try:
+            discovered = await _discover_qwen_model(args.endpoint, args.backend_timeout)
+        except Exception as exc:
+            print(
+                "Qwen inference server is not reachable at "
+                f"{_base_url(args.endpoint)} ({type(exc).__name__}: {exc}).\n"
+                "Start it with bash inference_setup/start_server.sh, or SSH-tunnel "
+                "port 8080 as in inference_setup/README.md, then rerun with --backend qwen.",
+                file=sys.stderr,
+            )
+            raise SystemExit(1) from exc
+        if model is None:
+            model = discovered
+        print(
+            f"Using QwenHTTPBackend endpoint={args.endpoint} "
+            f"api_style={args.api_style} model={model!r}",
+            file=sys.stderr,
+        )
+        factory = qwen_backend_factory(
+            endpoint=args.endpoint,
+            api_style=args.api_style,
+            model=model,
+            timeout_s=args.backend_timeout,
+            disable_think=not args.allow_think,
+        )
+    config = build_config(args, model=model)
+    report = await run_microbenchmarks(config, backend_factory=factory)
     paths = generate_plots(report, args.out / "graphs")
     summary = {
         "out_dir": str(args.out.resolve()),
-        "suites": [
-            {
-                "name": suite["name"],
-                "concurrency": suite["concurrency"],
-                "n_requests": suite["metrics"]["n_requests"],
-                "n_tasks": suite["metrics"]["n_tasks"],
-                "throughput_requests_per_s": suite["metrics"]["throughput_requests_per_s"],
-                "request_total_ms_p95": suite["metrics"]["request_total_ms"]["p95"],
-                "task_completion_ms_p95": suite["metrics"]["task_completion_ms"]["p95"],
-                "peak_rss_mib": suite["peak_rss_bytes"] / (1024 * 1024),
-            }
-            for suite in report["suites"]
-        ],
+        "run_id": report.get("run_id"),
+        "backend": args.backend,
+        "endpoint": args.endpoint if args.backend == "qwen" else None,
+        "model": config.model,
+        "n_trials": config.n_trials,
+        "clock_note": report.get("clock_note"),
+        "inference_memory_note": report.get("inference_memory_note"),
+        "suites": [suite_summary_row(suite) for suite in report["suites"]],
+        "aggregates": report.get("aggregates"),
         "graphs": [str(path) for path in paths],
     }
     (args.out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
