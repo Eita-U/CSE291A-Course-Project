@@ -157,7 +157,7 @@ class QwenHTTPBackend:
 
         if not isinstance(text, str):
             raise ValueError("Qwen API response must contain generated text as a string")
-        return {"response": text, "token_usage": usage}
+        return {"response": text, "token_usage": usage, "backend_timings": payload.get("timings", {})}
 
     async def aclose(self) -> None:
         """Close the internally-owned HTTP connection pool."""

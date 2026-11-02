@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from tqdm.auto import tqdm
 
 
-async def replay_task(scheduler, task: pd.DataFrame, progress, counts) -> dict:
+async def replay_task(scheduler, task: pd.DataFrame, progress, counts, cache_prompt: bool = True, pre_gap_scale: float = 1.0) -> dict:
     results = []
     task = task.sort_values("step")
 
@@ -13,10 +13,10 @@ async def replay_task(scheduler, task: pd.DataFrame, progress, counts) -> dict:
     started = time.perf_counter()
 
     for row in task.to_dict("records"):
-        gap = float(row["pre_gap"])
+        gap = float(row["pre_gap"]) * pre_gap_scale
         tqdm.write(f'{row["session_id"]} step={row["step"]}: pre_gap={gap:.3f}s')
 
-        await asyncio.sleep(float(row["pre_gap"]))
+        await asyncio.sleep(gap)
         result = await scheduler.submit({
             "request_id": f'{row["session_id"]}-step-{row["step"]}',
             "task_id": str(row["session_id"]),
@@ -25,8 +25,10 @@ async def replay_task(scheduler, task: pd.DataFrame, progress, counts) -> dict:
             "generation_settings": {
                 "max_tokens": int(row["output_length"]),
                 "temperature": 0,
+                "cache_prompt": cache_prompt
             },
         })
+        result["target_output_tokens"] = int(row["output_length"])
         results.append(result)
 
         status = result["status"]
@@ -64,12 +66,12 @@ async def replay_task(scheduler, task: pd.DataFrame, progress, counts) -> dict:
     }
 
 
-async def replay_trace(scheduler, tasks: dict[str, pd.DataFrame]) -> dict[str, dict]:
+async def replay_trace(scheduler, tasks: dict[str, pd.DataFrame], cache_prompt: bool = True, pre_gap_scale: float = 1.0) -> dict[str, dict]:
     task_ids = list(tasks)
 
     counts = {"failed": 0, "timeout": 0, "skipped": 0}
 
     with tqdm(total=sum(len(task) for task in tasks.values()), desc="Replaying requests", unit="req") as progress:
-        results = await asyncio.gather(*(replay_task(scheduler, tasks[task_id], progress, counts) for task_id in task_ids))
+        results = await asyncio.gather(*(replay_task(scheduler, tasks[task_id], progress, counts, cache_prompt, pre_gap_scale) for task_id in task_ids))
 
     return dict(zip(task_ids, results))

@@ -26,6 +26,7 @@ class InferenceResponse(TypedDict):
     worker_id: int | None
     timing_metadata: TimingMetadata
     token_usage: dict[str, int]
+    backend_timings: dict[str, Any]
     error: str | None
 
 

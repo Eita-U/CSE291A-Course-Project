@@ -112,7 +112,7 @@ class FIFOScheduler:
 
     def _finish(
         self, item: _Pending, status: RequestStatus, response: str | None = None,
-        token_usage: dict[str, int] | None = None, error: str | None = None,
+        token_usage: dict[str, int] | None = None, backend_timings: dict[str, Any] | None = None, error: str | None = None,
     ) -> None:
         finished_at, finished_utc = time.perf_counter(), _utc_now()
         dispatch = item.dispatched_at
@@ -131,6 +131,7 @@ class FIFOScheduler:
                 "total_time_ms": (finished_at - item.queued_at) * 1000,
             },
             "token_usage": dict(token_usage or {}), "error": error,
+            "backend_timings": dict(backend_timings or {}),
         }
         self._pending.pop(item.request.request_id, None)
         if not item.future.done():
@@ -170,7 +171,7 @@ class FIFOScheduler:
                 except Exception as exc:
                     self._finish(item, "failed", error=f"{type(exc).__name__}: {exc}")
                 else:
-                    self._finish(item, "success", result["response"], usage)
+                    self._finish(item, "success", result["response"], usage, result.get("backend_timings", {}),)
             finally:
                 self._queue.task_done()
 
