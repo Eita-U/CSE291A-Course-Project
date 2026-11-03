@@ -77,6 +77,8 @@ python inference_setup/monitor.py  # Ctrl-C to stop
 
 Default flags: `PORT=8080`, `CTX_SIZE=4096`, `PARALLEL=2`, `GPU_LAYERS=99`, `--metrics`, `--slots`, and `--jinja`. The Q8_0 model is loaded from `models/qwen3-1.7b/`. You can override `PORT`, `MODEL_PATH`, and the other environment variables; use `SERVER_URL` for smoke tests when the port differs. Check the server output to confirm CUDA offload and GPU/KV usage. These defaults are pilot settings, not benchmark optima.
 
+`/metrics` also reports GPU KV cache occupancy and CPU RAM prompt cache usage (`kv_cache_*`, `prompt_cache_*`); see [kv_cache_metrics.md](kv_cache_metrics.md). For how slots and llama.cpp's prompt caching work, see [kv_cache_notes.md](kv_cache_notes.md).
+
 ## Teammate connection
 
 From a teammate's **laptop**, establish an SSH tunnel (use their personal SSH key if needed):

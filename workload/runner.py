@@ -11,7 +11,15 @@ import asyncio
 import time
 from typing import Any, Protocol, Sequence
 
-from .definitions import AgentTaskSpec, build_prompt, estimate_tokens, prompt_rng
+from .definitions import (
+    PROMPT_TEMPLATE_VERSION,
+    AgentTaskSpec,
+    build_prompt,
+    estimate_tokens,
+    generation_settings_for,
+    prompt_digest,
+    prompt_rng,
+)
 from .instrumentation import InstrumentationRecorder, TaskRecord, utc_now
 
 
@@ -28,6 +36,12 @@ class AgentTaskRunner:
     ) -> None:
         self.scheduler = scheduler
         self.recorder = recorder or InstrumentationRecorder()
+        self._submit_launch_seq = 0
+
+    def _next_launch_seq(self) -> int:
+        seq = self._submit_launch_seq
+        self._submit_launch_seq += 1
+        return seq
 
     async def run_task(self, spec: AgentTaskSpec) -> TaskRecord:
         started = time.perf_counter()
@@ -35,21 +49,21 @@ class AgentTaskRunner:
         prior_text = ""
         recorded = []
         for step in spec.steps:
+            extra = prior_text if spec.profile.context_mode == "retained" else ""
             prompt = build_prompt(
                 step.instruction,
                 step.context_tokens,
-                extra_text=prior_text,
+                extra_text=extra,
                 rng=prompt_rng(spec, step.step_id),
             )
+            settings = generation_settings_for(step.max_tokens)
+            launch_seq = self._next_launch_seq()
             result = await self.scheduler.submit({
                 "request_id": f"{spec.task_id}-step-{step.step_id}",
                 "task_id": spec.task_id,
                 "step_id": step.step_id,
                 "prompt": prompt,
-                "generation_settings": {
-                    "max_tokens": step.max_tokens,
-                    "temperature": 0,
-                },
+                "generation_settings": settings,
             })
             tool_wait_ms = 0.0
             if result.get("status") == "success" and step.tool_delay_s > 0:
@@ -63,6 +77,12 @@ class AgentTaskRunner:
                 max_tokens=step.max_tokens,
                 tool_delay_s=step.tool_delay_s,
                 tool_wait_ms=tool_wait_ms,
+                submit_launch_seq=launch_seq,
+                prompt_sha256=prompt_digest(prompt),
+                generation_settings=settings,
+                prefix_mode=spec.profile.prefix_mode,
+                context_mode=spec.profile.context_mode,
+                prompt_template_version=PROMPT_TEMPLATE_VERSION,
             )
             recorded.append(record)
             if result.get("status") != "success":

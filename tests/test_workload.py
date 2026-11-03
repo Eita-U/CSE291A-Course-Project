@@ -67,6 +67,7 @@ class WorkloadDefinitionTests(unittest.TestCase):
         self.assertEqual(len(names), len(set(names)))
         self.assertTrue(any(p.context_class == "short" and p.n_steps == 1 for p in profiles))
         self.assertTrue(any(p.context_class == "long" and p.n_steps == 3 for p in profiles))
+        self.assertTrue(all(p.context_tokens == 512 for p in profiles if p.context_class == "long"))
         self.assertTrue(any(p.response_class == "short" and p.max_tokens == 32 for p in profiles))
         self.assertTrue(any(p.response_class == "long" and p.max_tokens == 256 for p in profiles))
         self.assertTrue(any(p.tool_delay_s == 0.0 for p in profiles))

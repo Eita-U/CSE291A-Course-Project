@@ -60,6 +60,18 @@ class QwenHTTPBackendTests(unittest.IsolatedAsyncioTestCase):
                 })
         self.assertEqual(result["status"], "failed")
         self.assertIn("HTTP 503", result["error"])
+        self.assertIn("down", result["error"])
+
+    async def test_http_400_includes_response_body(self):
+        transport = httpx.MockTransport(lambda req: httpx.Response(
+            400, json={"error": {"message": "prompt is too long"}},
+        ))
+        async with httpx.AsyncClient(transport=transport) as client:
+            backend = QwenHTTPBackend("http://example.test/v1/chat/completions", client=client)
+            with self.assertRaises(RuntimeError) as ctx:
+                await backend.generate({"prompt": "Hello"})
+        self.assertIn("HTTP 400", str(ctx.exception))
+        self.assertIn("too long", str(ctx.exception))
 
     async def test_missing_usage_not_fabricated(self):
         transport = httpx.MockTransport(lambda req: httpx.Response(200, json={

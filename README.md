@@ -20,11 +20,30 @@ python3 -m examples.basic_usage
 Workloads, dummy agents, request/task traces, and plots sit **on top of**
 `FIFOScheduler`. The scheduler is not modified. Default runs use
 `WorkloadMockLLM` on the local event loop: no GPU, no Qwen process, no AWS
-instance. Peak memory is **process RSS**, not inference/GPU memory. Swap in a
-real `LLMBackend` factory when the HTTP inference server exists.
+instance.
+
+Local `peak_benchmark_process_rss_bytes` is the **benchmark Python process
+RSS**. This harness does not measure llama-server RSS, model weights, GPU
+VRAM, or KV-cache memory. Independent EC2 telemetry should use the same
+`--run-id` and UTC suite windows in `telemetry_correlation.json` /
+`suite_boundary_events.jsonl`. Cross-machine correlation assumes synchronized
+clocks; this benchmark does not verify clock sync.
+
+To run against the real Qwen server (already started on the GPU instance, or
+SSH-tunneled to `127.0.0.1:8080`), pass `--backend qwen`. That injects
+`QwenHTTPBackend` through the existing `backend_factory`; it does not start
+the model process.
+
+Default **long** prompts are 512 whitespace tokens so they fit one llama.cpp
+slot at `--ctx-size 4096 --parallel 2`. 2048-word pads belong only to the
+`oversize_context` admission suite (expected HTTP 400), not the mixed or
+concurrency matrices. Metrics include an all-request view and
+`successful_only` latency/throughput. Override with `--long-context-tokens`
+and `--oversize-context-tokens`.
 
 Python **3.11+**. Tests and the scheduler use the standard library. Graphs need
-matplotlib (`pip install -r requirements-bench.txt`). From the repository root:
+matplotlib (`pip install -r requirements-bench.txt`). Real-model runs also need
+httpx (`pip install -r requirements-backend.txt`). From the repository root:
 
 ```bash
 python3 -m unittest discover -v
@@ -32,6 +51,10 @@ python3 -m examples.basic_usage
 python3 -m examples.workload_run
 python3 -m examples.run_microbenchmarks --quick
 python3 -m examples.run_microbenchmarks --out results/microbenchmarks
+python3 -m examples.run_microbenchmarks --backend qwen --quick
+python3 -m examples.run_microbenchmarks --backend qwen --out results/qwen --run-id phase1-fifo --trials 3
+python3 -m examples.run_microbenchmarks --backend qwen --warmup --trials 3 --run-id phase1-fifo
+```
 
 ## Scheduler interface
 
