@@ -34,10 +34,18 @@ index a5cba1d..96a6408 100644
                          metrics.reset_bucket();
                      }
 diff --git a/tools/server/server-task.cpp b/tools/server/server-task.cpp
-index d7ac2a1..969b90e 100644
+index d7ac2a1..5caa72b 100644
 --- a/tools/server/server-task.cpp
 +++ b/tools/server/server-task.cpp
-@@ -1597,6 +1597,22 @@ std::string server_task_result_metrics::to_metrics() {
+@@ -10,6 +10,7 @@
+ #include "speculative.h"
+ #include "server-common.h"
+ 
++#include <iomanip>
+ #include <sstream>
+ 
+ //
+@@ -1597,6 +1598,22 @@ std::string server_task_result_metrics::to_metrics() {
              "spec_decode_num_drafts_total",
              "Speculative: Total speculative decoding verification steps",
              (double) metrics.n_draft_verif_steps
@@ -60,7 +68,7 @@ index d7ac2a1..969b90e 100644
          },
      };
  
-@@ -1621,6 +1637,34 @@ std::string server_task_result_metrics::to_metrics() {
+@@ -1621,10 +1638,39 @@ std::string server_task_result_metrics::to_metrics() {
              "n_busy_slots_per_decode",
              "Average number of busy slots per llama_decode() call",
              (double) metrics.n_busy_slots / std::max((double) metrics.n_decode, 1.0)
@@ -95,7 +103,12 @@ index d7ac2a1..969b90e 100644
          },
      };
  
-@@ -1789,6 +1833,7 @@ server_prompt_cache_state * server_prompt_cache::alloc(const server_prompt & pro
+     std::stringstream prometheus;
++    prometheus << std::setprecision(15); // default (6 digits) rounds large counters, e.g. 1234567 -> 1.23457e+06
+ 
+     auto add_items = [&prometheus](const char * type, const std::vector<metric_item> & items) {
+         for (const auto & item : items) {
+@@ -1789,6 +1835,7 @@ server_prompt_cache_state * server_prompt_cache::alloc(const server_prompt & pro
                      states.front().size() / (1024.0 * 1024.0));
  
              states.pop_front();
@@ -103,7 +116,7 @@ index d7ac2a1..969b90e 100644
          }
      }
  
-@@ -1821,6 +1866,7 @@ server_prompt_cache_state * server_prompt_cache::alloc(const server_prompt & pro
+@@ -1821,6 +1868,7 @@ server_prompt_cache_state * server_prompt_cache::alloc(const server_prompt & pro
              /*.drft =*/ std::move(state_data_dft),
          },
      });
@@ -111,7 +124,7 @@ index d7ac2a1..969b90e 100644
  
      return &states.back();
  }
-@@ -1897,6 +1943,9 @@ bool server_prompt_cache::load(server_prompt & prompt, const server_tokens & tok
+@@ -1897,6 +1945,9 @@ bool server_prompt_cache::load(server_prompt & prompt, const server_tokens & tok
          prompt = std::move(it_best->prompt);
  
          states.erase(it_best);
@@ -121,7 +134,7 @@ index d7ac2a1..969b90e 100644
      }
  
      return true;
-@@ -1908,6 +1957,7 @@ void server_prompt_cache::update() {
+@@ -1908,6 +1959,7 @@ void server_prompt_cache::update() {
              SRV_WRN(" - cache size limit reached, removing oldest entry (size = %.3f MiB)\n", states.front().size() / (1024.0 * 1024.0));
  
              states.pop_front();
@@ -129,7 +142,7 @@ index d7ac2a1..969b90e 100644
          }
      }
  
-@@ -1923,6 +1973,7 @@ void server_prompt_cache::update() {
+@@ -1923,6 +1975,7 @@ void server_prompt_cache::update() {
                      limit_tokens, limit_tokens_cur, states.front().size() / (1024.0 * 1024.0));
  
              states.pop_front();
