@@ -53,15 +53,13 @@ fi
 # Record the commit used for experiments.
 git rev-parse HEAD | tee "$PROJECT_ROOT/llama_cpp_commit.txt"
 
-# Add KV cache occupancy gauges to /metrics. Skipped if already applied.
+# Add KV cache and prompt cache metrics to /metrics. The patched files are
+# reset first so an older version of the patch is replaced cleanly.
 PATCH="$SCRIPT_DIR/llama-kv-metrics.patch"
 
-if git apply --reverse --check "$PATCH" 2>/dev/null; then
-    echo "KV metrics patch already applied."
-else
-    git apply "$PATCH"
-    echo "Applied KV metrics patch."
-fi
+git checkout -- tools/server/server-context.cpp tools/server/server-task.cpp tools/server/server-task.h
+git apply "$PATCH"
+echo "Applied KV metrics patch."
 
 # Build llama-server with CUDA support.
 cmake -S . -B build \
