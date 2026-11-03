@@ -1,0 +1,60 @@
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index a5cba1d..24476db 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -3111,6 +3111,19 @@ private:
+                     res->n_tasks_deferred    = queue_tasks.queue_tasks_deferred_size();
+                     res->metrics             = metrics;
+ 
++                    // KV cache occupancy: sum of positions held by each slot's sequence
++                    {
++                        llama_memory_t mem = llama_get_memory(ctx_tgt);
++                        for (const server_slot & slot : slots) {
++                            const llama_pos pos_min = llama_memory_seq_pos_min(mem, slot.id);
++                            const llama_pos pos_max = llama_memory_seq_pos_max(mem, slot.id);
++                            if (pos_max >= 0) {
++                                res->n_kv_tokens_used += pos_max - pos_min + 1;
++                            }
++                        }
++                        res->n_kv_tokens_total = n_ctx;
++                    }
++
+                     if (task.metrics_reset_bucket) {
+                         metrics.reset_bucket();
+                     }
+diff --git a/tools/server/server-task.cpp b/tools/server/server-task.cpp
+index d7ac2a1..6f0f165 100644
+--- a/tools/server/server-task.cpp
++++ b/tools/server/server-task.cpp
+@@ -1621,6 +1621,18 @@ std::string server_task_result_metrics::to_metrics() {
+             "n_busy_slots_per_decode",
+             "Average number of busy slots per llama_decode() call",
+             (double) metrics.n_busy_slots / std::max((double) metrics.n_decode, 1.0)
++        }, {
++            "kv_cache_tokens",
++            "Number of tokens currently held in the KV cache",
++            (double) n_kv_tokens_used
++        }, {
++            "kv_cache_tokens_max",
++            "KV cache capacity in tokens (n_ctx)",
++            (double) n_kv_tokens_total
++        }, {
++            "kv_cache_usage_ratio",
++            "KV cache occupancy (0 = empty, 1 = full)",
++            (double) n_kv_tokens_used / std::max((double) n_kv_tokens_total, 1.0)
+         },
+     };
+ 
+diff --git a/tools/server/server-task.h b/tools/server/server-task.h
+index d6b6f4b..e830709 100644
+--- a/tools/server/server-task.h
++++ b/tools/server/server-task.h
+@@ -579,6 +579,8 @@ struct server_task_result_metrics : server_task_result {
+     // these are immediate stats, not accumulated (server_metrics is cumulative)
+     int n_processing_slots = 0;
+     int n_tasks_deferred = 0;
++    int64_t n_kv_tokens_used = 0;  // KV cells held by all slots (including idle slots kept for prefix reuse)
++    int64_t n_kv_tokens_total = 0; // total KV capacity (n_ctx)
+ 
+     server_metrics metrics;
+ 

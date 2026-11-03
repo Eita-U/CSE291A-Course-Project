@@ -42,14 +42,26 @@ fi
 
 cd "$LLAMA_DIR"
 
-# Optional: pin a tested commit for reproducibility.
-if [ -n "${LLAMA_CPP_COMMIT:-}" ]; then
+# Pin a tested commit for reproducibility (override with LLAMA_CPP_COMMIT).
+LLAMA_CPP_COMMIT="${LLAMA_CPP_COMMIT:-d854d98bae598388ecea1ed84396587e5edc326d}"
+
+if [ "$(git rev-parse HEAD)" != "$(git rev-parse --verify --quiet "$LLAMA_CPP_COMMIT^{commit}" || true)" ]; then
     git fetch origin
     git checkout "$LLAMA_CPP_COMMIT"
 fi
 
 # Record the commit used for experiments.
 git rev-parse HEAD | tee "$PROJECT_ROOT/llama_cpp_commit.txt"
+
+# Add KV cache occupancy gauges to /metrics. Skipped if already applied.
+PATCH="$SCRIPT_DIR/llama-kv-metrics.patch"
+
+if git apply --reverse --check "$PATCH" 2>/dev/null; then
+    echo "KV metrics patch already applied."
+else
+    git apply "$PATCH"
+    echo "Applied KV metrics patch."
+fi
 
 # Build llama-server with CUDA support.
 cmake -S . -B build \
