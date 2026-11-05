@@ -88,6 +88,64 @@ medians from healthy trials; oversize rejects stay in the failure counts).
 `bundle_memory_analysis.py` copies that brief plus the memory tables into
 `memory_analysis_bundle/` and leaves traces and the 1 Hz CSV out.
 
+## Realistic Macrobenchmarks (Task 4)
+
+Prepare `data/processed/trace_32k.parquet` following [data/README.md](data/README.md).
+Install replay and analysis dependencies in your Python environment:
+
+```bash
+python -m pip install pandas pyarrow numpy tqdm httpx
+python -m pip install psutil requests  # EC2 memory monitor
+```
+
+In `examples/run_trace.py`, set the session selection, `concurrency`,
+`pre_gap_scale`, `cache_prompt`, and output `run_id`. The current example selects
+three sessions with seed 42 and replays one at a time using `task_index` (0–2).
+Steps use recorded conversation histories; tool delays are simulated with
+`pre_gap`, and recorded output lengths become generation limits.
+
+Run from the repository root on EC2, using separate terminals for the server,
+monitor, and replay. Follow [inference_setup/README.md](inference_setup/README.md)
+for server installation. Example with concurrency 1 and 32K context per slot:
+
+```bash
+# Terminal 1: start a fresh inference server for each condition.
+CTX_SIZE=32768 PARALLEL=1 bash inference_setup/start_server.sh
+
+# Terminal 2: after the server is ready, start monitoring.
+MONITOR_INTERVAL=0.2 MONITOR_OUTPUT=measurement/memory.csv python inference_setup/monitor.py
+
+# Terminal 3: replay the selected sessions.
+python -m examples.run_trace
+```
+
+Match server `PARALLEL` to FIFO `concurrency` and set `CTX_SIZE` to
+`32768 * PARALLEL`. Confirm the monitor PID matches the intended server.
+After replay finishes, stop the monitor with Ctrl-C. Set the result JSON and
+matching CSV paths in `examples/run_trace_calculation.py`, then run:
+
+```bash
+python -m examples.run_trace_calculation
+```
+
+Files produced by these scripts:
+
+| File | Purpose and location |
+| --- | --- |
+| `results.json` | Configuration, run/task timing, request outcomes, token counts, and backend timings; written to `measurement/results/<run_id>/results.json`. |
+| `memory.csv` | Timestamped GPU memory, server RSS, and cache metrics; written to `measurement/memory.csv` by the command above. |
+| `metrics.json` | Aggregated performance, memory, prefix reuse, and per-step context-growth metrics; written to `measurement/metrics.json`. |
+
+Archive the matching CSV and metrics beside each run's `results.json` before
+the next run overwrites the shared output files. Analysis selects memory
+samples within the recorded UTC execution windows. Collected experiments are
+organized under:
+
+- `measurement/results/concurrency/`: 20 sessions, concurrency 1/2/4/5.
+- `measurement/results/idle/`: five sessions, delay scales 0/1/2.
+- `measurement/results/prefix/`: three sessions replayed individually with
+  prefix reuse ON/OFF, also used for context-growth analysis.
+
 ## Scheduler interface
 
 ```python
