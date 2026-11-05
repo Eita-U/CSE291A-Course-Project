@@ -11,6 +11,12 @@ timeouts or connection errors. `oversize_context` is the only expected failure
 (HTTP 400 when a 2048-word prompt exceeds the 2048-token slot). Earlier
 directories (`phase1-fifo-002` through `004`) are not the baseline.
 
+## Set up the GPU server
+
+To set up the inference environment on an EC2 GPU instance (NVIDIA driver,
+CUDA, llama.cpp, Python packages and the model), follow
+[inference_setup/README.md](inference_setup/README.md).
+
 ## Run locally
 
 Python **3.11+**; runtime and tests use only the standard library. From the
