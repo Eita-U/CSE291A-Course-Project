@@ -1,0 +1,587 @@
+{
+  "config": {
+    "concurrency": 1,
+    "cache_prompt": false,
+    "pre_gap_scale": 1.0
+  },
+  "timing_metadata": {
+    "run_start_time": "2026-11-04T00:31:12.214656+00:00",
+    "run_finish_time": "2026-11-04T00:32:30.874284+00:00",
+    "run_duration_ms": 78659.61004502606
+  },
+  "tasks": {
+    "gaia__L2_8f80e01c-1296-43__claude": {
+      "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+      "status": "success",
+      "n_steps_completed": 17,
+      "timing_metadata": {
+        "task_start_time": "2026-11-04T00:31:12.217881+00:00",
+        "task_finish_time": "2026-11-04T00:32:30.873796+00:00",
+        "task_duration_ms": 78655.90610902291
+      },
+      "requests": [
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-1",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 1,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:12.219041Z",
+            "execution_start_time": "2026-11-04T00:31:12.219075Z",
+            "execution_finish_time": "2026-11-04T00:31:12.827405Z",
+            "queue_time_ms": 0.03511004615575075,
+            "api_time_ms": 608.328387956135,
+            "total_time_ms": 608.3634980022907
+          },
+          "token_usage": {
+            "prompt_tokens": 432,
+            "completion_tokens": 64
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 432,
+            "prompt_ms": 39.792,
+            "prompt_per_token_ms": 0.09211111111111112,
+            "prompt_per_second": 10856.453558504221,
+            "predicted_n": 64,
+            "predicted_ms": 543.727,
+            "predicted_per_token_ms": 8.630587301587301,
+            "predicted_per_second": 115.86697000516804
+          },
+          "target_output_tokens": 64
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-2",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 2,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:13.169404Z",
+            "execution_start_time": "2026-11-04T00:31:13.169489Z",
+            "execution_finish_time": "2026-11-04T00:31:14.156121Z",
+            "queue_time_ms": 0.08647202048450708,
+            "api_time_ms": 986.6309539647773,
+            "total_time_ms": 986.7174259852618
+          },
+          "token_usage": {
+            "prompt_tokens": 520,
+            "completion_tokens": 108
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 520,
+            "prompt_ms": 47.142,
+            "prompt_per_token_ms": 0.09065769230769231,
+            "prompt_per_second": 11030.503584913664,
+            "predicted_n": 108,
+            "predicted_ms": 934.356,
+            "predicted_per_token_ms": 8.73229906542056,
+            "predicted_per_second": 114.51737881492708
+          },
+          "target_output_tokens": 108
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-3",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 3,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:14.412919Z",
+            "execution_start_time": "2026-11-04T00:31:14.412995Z",
+            "execution_finish_time": "2026-11-04T00:31:15.386605Z",
+            "queue_time_ms": 0.07729197386652231,
+            "api_time_ms": 973.6094390973449,
+            "total_time_ms": 973.6867310712114
+          },
+          "token_usage": {
+            "prompt_tokens": 653,
+            "completion_tokens": 106
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 653,
+            "prompt_ms": 52.342,
+            "prompt_per_token_ms": 0.080156202143951,
+            "prompt_per_second": 12475.640976653547,
+            "predicted_n": 106,
+            "predicted_ms": 915.997,
+            "predicted_per_token_ms": 8.723780952380952,
+            "predicted_per_second": 114.62919638383096
+          },
+          "target_output_tokens": 106
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-4",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 4,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:19.011990Z",
+            "execution_start_time": "2026-11-04T00:31:19.012081Z",
+            "execution_finish_time": "2026-11-04T00:31:19.776125Z",
+            "queue_time_ms": 0.0930719543248415,
+            "api_time_ms": 764.0435800421983,
+            "total_time_ms": 764.1366519965231
+          },
+          "token_usage": {
+            "prompt_tokens": 879,
+            "completion_tokens": 80
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 879,
+            "prompt_ms": 58.959,
+            "prompt_per_token_ms": 0.06707508532423209,
+            "prompt_per_second": 14908.665343713426,
+            "predicted_n": 80,
+            "predicted_ms": 698.701,
+            "predicted_per_token_ms": 8.844316455696204,
+            "predicted_per_second": 113.06696283531868
+          },
+          "target_output_tokens": 80
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-5",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 5,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:20.031088Z",
+            "execution_start_time": "2026-11-04T00:31:20.031170Z",
+            "execution_finish_time": "2026-11-04T00:31:20.582423Z",
+            "queue_time_ms": 0.08389190770685673,
+            "api_time_ms": 551.2524670921266,
+            "total_time_ms": 551.3363589998335
+          },
+          "token_usage": {
+            "prompt_tokens": 956,
+            "completion_tokens": 55
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 956,
+            "prompt_ms": 64.325,
+            "prompt_per_token_ms": 0.06728556485355648,
+            "prompt_per_second": 14862.028760202098,
+            "predicted_n": 55,
+            "predicted_ms": 479.911,
+            "predicted_per_token_ms": 8.88724074074074,
+            "predicted_per_second": 112.52086324339305
+          },
+          "target_output_tokens": 55
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-6",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 6,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:24.791270Z",
+            "execution_start_time": "2026-11-04T00:31:24.791327Z",
+            "execution_finish_time": "2026-11-04T00:31:26.198785Z",
+            "queue_time_ms": 0.05878100637346506,
+            "api_time_ms": 1407.4567359639332,
+            "total_time_ms": 1407.5155169703066
+          },
+          "token_usage": {
+            "prompt_tokens": 1011,
+            "completion_tokens": 149
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 1011,
+            "prompt_ms": 69.903,
+            "prompt_per_token_ms": 0.06914243323442137,
+            "prompt_per_second": 14462.89858804343,
+            "predicted_n": 149,
+            "predicted_ms": 1329.674,
+            "predicted_per_token_ms": 8.984283783783784,
+            "predicted_per_second": 111.30547788405279
+          },
+          "target_output_tokens": 149
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-7",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 7,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:26.520850Z",
+            "execution_start_time": "2026-11-04T00:31:26.520936Z",
+            "execution_finish_time": "2026-11-04T00:31:28.109453Z",
+            "queue_time_ms": 0.08713197894394398,
+            "api_time_ms": 1588.5169480461627,
+            "total_time_ms": 1588.6040800251067
+          },
+          "token_usage": {
+            "prompt_tokens": 1189,
+            "completion_tokens": 165
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 1189,
+            "prompt_ms": 93.267,
+            "prompt_per_token_ms": 0.07844154751892346,
+            "prompt_per_second": 12748.346146010916,
+            "predicted_n": 165,
+            "predicted_ms": 1486.63,
+            "predicted_per_token_ms": 9.064817073170733,
+            "predicted_per_second": 110.31662215884248
+          },
+          "target_output_tokens": 165
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-8",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 8,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:28.443576Z",
+            "execution_start_time": "2026-11-04T00:31:28.443656Z",
+            "execution_finish_time": "2026-11-04T00:31:29.066113Z",
+            "queue_time_ms": 0.08193205576390028,
+            "api_time_ms": 622.4557949462906,
+            "total_time_ms": 622.5377270020545
+          },
+          "token_usage": {
+            "prompt_tokens": 1366,
+            "completion_tokens": 57
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 1366,
+            "prompt_ms": 101.428,
+            "prompt_per_token_ms": 0.07425183016105417,
+            "prompt_per_second": 13467.681508064834,
+            "predicted_n": 57,
+            "predicted_ms": 512.07,
+            "predicted_per_token_ms": 9.144107142857143,
+            "predicted_per_second": 109.36004843087858
+          },
+          "target_output_tokens": 57
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-9",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 9,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:30.605563Z",
+            "execution_start_time": "2026-11-04T00:31:30.605645Z",
+            "execution_finish_time": "2026-11-04T00:31:33.119876Z",
+            "queue_time_ms": 0.08412206079810858,
+            "api_time_ms": 2514.229499967769,
+            "total_time_ms": 2514.313622028567
+          },
+          "token_usage": {
+            "prompt_tokens": 1424,
+            "completion_tokens": 262
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 1424,
+            "prompt_ms": 104.877,
+            "prompt_per_token_ms": 0.0736495786516854,
+            "prompt_per_second": 13577.81019670662,
+            "predicted_n": 262,
+            "predicted_ms": 2399.668,
+            "predicted_per_token_ms": 9.194130268199235,
+            "predicted_per_second": 108.76504583134
+          },
+          "target_output_tokens": 262
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-10",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 10,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:33.454127Z",
+            "execution_start_time": "2026-11-04T00:31:33.454179Z",
+            "execution_finish_time": "2026-11-04T00:31:37.295475Z",
+            "queue_time_ms": 0.0540510518476367,
+            "api_time_ms": 3841.293858946301,
+            "total_time_ms": 3841.3479099981487
+          },
+          "token_usage": {
+            "prompt_tokens": 1996,
+            "completion_tokens": 389
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 1996,
+            "prompt_ms": 151.965,
+            "prompt_per_token_ms": 0.07613476953907816,
+            "prompt_per_second": 13134.603362616392,
+            "predicted_n": 389,
+            "predicted_ms": 3678.675,
+            "predicted_per_token_ms": 9.481121134020619,
+            "predicted_per_second": 105.47275853398301
+          },
+          "target_output_tokens": 389
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-11",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 11,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:37.638541Z",
+            "execution_start_time": "2026-11-04T00:31:37.638602Z",
+            "execution_finish_time": "2026-11-04T00:31:50.774821Z",
+            "queue_time_ms": 0.062211998738348484,
+            "api_time_ms": 13136.217579012737,
+            "total_time_ms": 13136.279791011475
+          },
+          "token_usage": {
+            "prompt_tokens": 5181,
+            "completion_tokens": 1139
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 5181,
+            "prompt_ms": 446.57,
+            "prompt_per_token_ms": 0.0861937849835939,
+            "prompt_per_second": 11601.76456098708,
+            "predicted_n": 1139,
+            "predicted_ms": 12675.88,
+            "predicted_per_token_ms": 11.138734622144112,
+            "predicted_per_second": 89.77680445065747
+          },
+          "target_output_tokens": 1139
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-12",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 12,
+          "response": "6",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:51.047746Z",
+            "execution_start_time": "2026-11-04T00:31:51.047794Z",
+            "execution_finish_time": "2026-11-04T00:31:56.066435Z",
+            "queue_time_ms": 0.04919199272990227,
+            "api_time_ms": 5018.639763002284,
+            "total_time_ms": 5018.688954995014
+          },
+          "token_usage": {
+            "prompt_tokens": 6458,
+            "completion_tokens": 384
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 6458,
+            "prompt_ms": 578.203,
+            "prompt_per_token_ms": 0.08953282750077422,
+            "prompt_per_second": 11169.087673360395,
+            "predicted_n": 384,
+            "predicted_ms": 4426.233,
+            "predicted_per_token_ms": 11.556744125326372,
+            "predicted_per_second": 86.5295613674201
+          },
+          "target_output_tokens": 1026
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-13",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 13,
+          "response": "10",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:31:56.331616Z",
+            "execution_start_time": "2026-11-04T00:31:56.331704Z",
+            "execution_finish_time": "2026-11-04T00:32:01.142772Z",
+            "queue_time_ms": 0.08942210115492344,
+            "api_time_ms": 4811.0676689539105,
+            "total_time_ms": 4811.157091055065
+          },
+          "token_usage": {
+            "prompt_tokens": 7547,
+            "completion_tokens": 341
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 7547,
+            "prompt_ms": 699.8,
+            "prompt_per_token_ms": 0.09272558632569232,
+            "prompt_per_second": 10784.50985995999,
+            "predicted_n": 341,
+            "predicted_ms": 4095.201,
+            "predicted_per_token_ms": 12.044708823529412,
+            "predicted_per_second": 83.02400785700141
+          },
+          "target_output_tokens": 465
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-14",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 14,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:32:01.452058Z",
+            "execution_start_time": "2026-11-04T00:32:01.452161Z",
+            "execution_finish_time": "2026-11-04T00:32:10.063281Z",
+            "queue_time_ms": 0.1054219901561737,
+            "api_time_ms": 8611.118451110087,
+            "total_time_ms": 8611.223873100244
+          },
+          "token_usage": {
+            "prompt_tokens": 8169,
+            "completion_tokens": 631
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 8169,
+            "prompt_ms": 772.936,
+            "prompt_per_token_ms": 0.09461819072101849,
+            "prompt_per_second": 10568.792241530993,
+            "predicted_n": 631,
+            "predicted_ms": 7820.616,
+            "predicted_per_token_ms": 12.41367619047619,
+            "predicted_per_second": 80.55631423407056
+          },
+          "target_output_tokens": 631
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-15",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 15,
+          "response": "10",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:32:10.324267Z",
+            "execution_start_time": "2026-11-04T00:32:10.324320Z",
+            "execution_finish_time": "2026-11-04T00:32:17.262467Z",
+            "queue_time_ms": 0.054592033848166466,
+            "api_time_ms": 6938.145244959742,
+            "total_time_ms": 6938.19983699359
+          },
+          "token_usage": {
+            "prompt_tokens": 8813,
+            "completion_tokens": 478
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 8813,
+            "prompt_ms": 866.279,
+            "prompt_per_token_ms": 0.0982955860660388,
+            "prompt_per_second": 10173.396792488333,
+            "predicted_n": 478,
+            "predicted_ms": 6051.549,
+            "predicted_per_token_ms": 12.686685534591195,
+            "predicted_per_second": 78.82279396564417
+          },
+          "target_output_tokens": 720
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-16",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 16,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:32:17.529621Z",
+            "execution_start_time": "2026-11-04T00:32:17.529672Z",
+            "execution_finish_time": "2026-11-04T00:32:25.003328Z",
+            "queue_time_ms": 0.05231203977018595,
+            "api_time_ms": 7473.654077970423,
+            "total_time_ms": 7473.706390010193
+          },
+          "token_usage": {
+            "prompt_tokens": 9659,
+            "completion_tokens": 497
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 9659,
+            "prompt_ms": 966.217,
+            "prompt_per_token_ms": 0.10003281913241537,
+            "prompt_per_second": 9996.719163500538,
+            "predicted_n": 497,
+            "predicted_ms": 6487.379,
+            "predicted_per_token_ms": 13.07939314516129,
+            "predicted_per_second": 76.4561466194591
+          },
+          "target_output_tokens": 497
+        },
+        {
+          "request_id": "gaia__L2_8f80e01c-1296-43__claude-step-17",
+          "task_id": "gaia__L2_8f80e01c-1296-43__claude",
+          "step_id": 17,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T00:32:25.268605Z",
+            "execution_start_time": "2026-11-04T00:32:25.268703Z",
+            "execution_finish_time": "2026-11-04T00:32:30.873590Z",
+            "queue_time_ms": 0.0994630390778184,
+            "api_time_ms": 5604.885539971292,
+            "total_time_ms": 5604.98500301037
+          },
+          "token_usage": {
+            "prompt_tokens": 10149,
+            "completion_tokens": 344
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 10149,
+            "prompt_ms": 1036.181,
+            "prompt_per_token_ms": 0.10209685683318553,
+            "prompt_per_second": 9794.620823968013,
+            "predicted_n": 344,
+            "predicted_ms": 4547.144,
+            "predicted_per_token_ms": 13.256979591836735,
+            "predicted_per_second": 75.43196344782571
+          },
+          "target_output_tokens": 344
+        }
+      ]
+    }
+  }
+}
