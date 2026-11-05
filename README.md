@@ -1,9 +1,15 @@
 # CSE291A Course Project
 
-Phase 1: FIFO baseline for memory-aware agent serving. This contribution
-implements Yuchen's request scheduler only. AWS deployment, HTTP transport,
-agent workload generation, memory monitoring, and experiment analysis remain
-separate team components.
+Phase 1 FIFO baseline for memory-aware agent serving. This repository contains
+the FIFO scheduler, the synthetic microbenchmark harness, the Qwen HTTP
+backend, and the post-run memory analysis scripts. llama.cpp still runs on the
+GPU instance; this repo does not start that process.
+
+The recorded baseline is `results/phase1-fifo-005`: three trials, Qwen3-1.7B
+Q8_0, `--ctx-size 4096 --parallel 2`. Admitted suites finished with no
+timeouts or connection errors. `oversize_context` is the only expected failure
+(HTTP 400 when a 2048-word prompt exceeds the 2048-token slot). Earlier
+directories (`phase1-fifo-002` through `004`) are not the baseline.
 
 ## Run locally
 
@@ -23,11 +29,14 @@ Workloads, dummy agents, request/task traces, and plots sit **on top of**
 instance.
 
 Local `peak_benchmark_process_rss_bytes` is the **benchmark Python process
-RSS**. This harness does not measure llama-server RSS, model weights, GPU
-VRAM, or KV-cache memory. Independent EC2 telemetry should use the same
-`--run-id` and UTC suite windows in `telemetry_correlation.json` /
-`suite_boundary_events.jsonl`. Cross-machine correlation assumes synchronized
-clocks; this benchmark does not verify clock sync.
+RSS**. GPU VRAM, llama-server RSS, KV occupancy, and prompt-cache counters
+come from an independent EC2 CSV, `gpu_system_metrics.csv`, joined to
+`suite_boundary_events.jsonl` by UTC. Use the same directory for `--out` and
+the same string for `--run-id`. This harness does not check clock sync.
+
+`--run-id` must match `--out`. A mismatch leaves `run_id` inside the JSONL
+different from the folder name; `scripts/analyze_memory.py` still reads the
+folder, and prints a warning.
 
 To run against the real Qwen server (already started on the GPU instance, or
 SSH-tunneled to `127.0.0.1:8080`), pass `--backend qwen`. That injects
@@ -52,9 +61,32 @@ python3 -m examples.workload_run
 python3 -m examples.run_microbenchmarks --quick
 python3 -m examples.run_microbenchmarks --out results/microbenchmarks
 python3 -m examples.run_microbenchmarks --backend qwen --quick
-python3 -m examples.run_microbenchmarks --backend qwen --out results/qwen --run-id phase1-fifo --trials 3
-python3 -m examples.run_microbenchmarks --backend qwen --warmup --trials 3 --run-id phase1-fifo
+python3 -m examples.run_microbenchmarks --backend qwen \
+  --endpoint http://127.0.0.1:8080/v1/chat/completions \
+  --out results/phase1-fifo-005 --run-id phase1-fifo-005 \
+  --trials 3 --warmup
 ```
+
+Start the EC2 monitor before the first suite and leave it running until the
+last suite finishes. Copy `gpu_system_metrics.csv` into the same `--out`
+directory, then:
+
+```bash
+python3 scripts/analyze_memory.py --run-id phase1-fifo-005
+python3 scripts/summarize_microbenchmark.py --run-id phase1-fifo-005
+python3 scripts/bundle_memory_analysis.py --run-id phase1-fifo-005
+```
+
+`analyze_memory.py` requires `utc_time`, `gpu_memory_used_mib`,
+`gpu_memory_total_mib`, `gpu_utilization_pct`, and `server_rss_bytes`. KV
+tokens, prompt-cache fields, and `server_gpu_memory_mib` are optional; empty
+cells after the server exits are skipped. The checked-in
+`inference_setup/monitor.py` records nvidia-smi and host RAM only. The Phase 1
+CSV was produced by the expanded EC2 monitor that also samples llama.cpp
+metrics. `summarize_microbenchmark.py` writes `analysis_brief.md` (suite
+medians from healthy trials; oversize rejects stay in the failure counts).
+`bundle_memory_analysis.py` copies that brief plus the memory tables into
+`memory_analysis_bundle/` and leaves traces and the 1 Hz CSV out.
 
 ## Scheduler interface
 
@@ -210,18 +242,24 @@ execution or peak inference memory.
   keep submit tasks alive until terminal outcomes are returned.
 
 The fixed HTTP-call limit does not establish how many llama.cpp model slots are
-active. Coordinate server parallel-slot configuration separately. No HTTP API
-adapter or live inference integration is included in this component.
+active. The Phase 1 server uses `--parallel 2`, so FIFO concurrency 2 matches
+the slot count and concurrency 4 waits inside llama.cpp. Live calls go through
+`scheduler/qwen_backend.py` (`QwenHTTPBackend`); the server must already be
+listening, usually via the SSH tunnel in `inference_setup/README.md`.
 
 ## Layout and verification
 
-- `scheduler/schemas.py`: validated request and typed response contract.
 - `scheduler/fifo.py`: admission, worker pool, timing, and shutdown.
+- `scheduler/schemas.py`: validated request and typed response contract.
 - `scheduler/mock_llm.py`: local async mock; no external services.
-- `tests/test_fifo.py`: event-gated ordering/concurrency, response mapping,
-  monotonic timing, failures, timeouts, cancellation, validation, and shutdown.
-- `examples/basic_usage.py`: minimal caller integration.
+- `scheduler/qwen_backend.py`: HTTP client for an already-running llama.cpp server.
+- `workload/`: synthetic profiles, dummy-agent runner, suite metrics, and plots.
+- `examples/run_microbenchmarks.py`: mock or Qwen suite runner.
+- `inference_setup/`: EC2 install, server start, smoke test, and the basic monitor.
+- `scripts/analyze_memory.py`: join the EC2 CSV to suite windows.
+- `scripts/summarize_microbenchmark.py`: assignment-sized tables from trial metrics.
+- `scripts/bundle_memory_analysis.py`: high-level memory bundle, without traces.
+- `tests/`: FIFO ordering, workload construction, Qwen HTTP mapping, and suite checks.
 
-The queue and backend execution are separated in the implementation so a future
-policy can replace admission/dispatch behavior. Phase 2 memory-aware policies
-are intentionally outside this baseline.
+The queue and backend execution are separated so a later policy can replace
+admission and dispatch. Phase 2 memory-aware policies are outside this baseline.
