@@ -5,6 +5,12 @@ implements Yuchen's request scheduler only. AWS deployment, HTTP transport,
 agent workload generation, memory monitoring, and experiment analysis remain
 separate team components.
 
+## Set up the GPU server
+
+To set up the inference environment on an EC2 GPU instance (NVIDIA driver,
+CUDA, llama.cpp, Python packages and the model), follow
+[inference_setup/README.md](inference_setup/README.md).
+
 ## Run locally
 
 Python **3.11+**; runtime and tests use only the standard library. From the
