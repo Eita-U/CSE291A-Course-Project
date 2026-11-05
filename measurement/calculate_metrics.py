@@ -61,7 +61,7 @@ def calculate_request_memory(results, memory):
                 "prompt_tokens": request["token_usage"].get("prompt_tokens"),
                 "completion_tokens": request["token_usage"].get("completion_tokens"),
                 "peak_gpu_memory_mib": max((float(row["gpu_memory_used_mib"]) for row in samples), default=None),
-                "peak_system_ram_bytes": max((int(row["system_used_bytes"]) for row in samples), default=None),
+                "peak_server_rss_bytes": max((int(row["server_rss_bytes"]) for row in samples), default=None),
                 "api_time_ms": timing["api_time_ms"],
                 "sample_count": len(samples)
             })
@@ -79,12 +79,12 @@ def calculate_request_memory(results, memory):
     result = {}
     for group_id in sorted(groups):
         peak_gpu_memories_mib = [request["peak_gpu_memory_mib"] for request in groups[group_id]]
-        peak_system_rams_bytes = [request["peak_system_ram_bytes"] for request in groups[group_id]]
+        peak_server_rss_bytes = [request["peak_server_rss_bytes"] for request in groups[group_id]]
         api_times_ms = [request["api_time_ms"] for request in groups[group_id]]
         completion_tokens = [request["completion_tokens"] for request in groups[group_id] if request["completion_tokens"] is not None]
 
         gpu_p50,  gpu_p95,  gpu_p99 = np.percentile(peak_gpu_memories_mib, [50, 95, 99], method="linear")
-        ram_p50,  ram_p95,  ram_p99 = np.percentile(peak_system_rams_bytes, [50, 95, 99], method="linear")
+        server_rss_p50,  server_rss_p95,  server_rss_p99 = np.percentile(peak_server_rss_bytes, [50, 95, 99], method="linear")
         api_p50, api_p95, api_p99 = np.percentile(api_times_ms, [50, 95, 99], method="linear")
 
 
@@ -93,10 +93,10 @@ def calculate_request_memory(results, memory):
             "gpu_p50_mib": float(gpu_p50),
             "gpu_p95_mib": float(gpu_p95),
             "gpu_p99_mib": float(gpu_p99),
-            "ram_mean_bytes": sum(peak_system_rams_bytes) / len(peak_system_rams_bytes),
-            "ram_p50_bytes": float(ram_p50),
-            "ram_p95_bytes": float(ram_p95),
-            "ram_p99_bytes": float(ram_p99),
+            "server_rss_mean_bytes": sum(peak_server_rss_bytes) / len(peak_server_rss_bytes),
+            "server_rss_p50_bytes": float(server_rss_p50),
+            "server_rss_p95_bytes": float(server_rss_p95),
+            "server_rss_p99_bytes": float(server_rss_p99),
             "api_mean_ms": sum(api_times_ms) / len(api_times_ms),
             "api_p50_ms": float(api_p50),
             "api_p95_ms": float(api_p95),
@@ -135,7 +135,10 @@ def calculate_context_growth(results, memory):
                 "prompt_ms": backend.get("prompt_ms"),
                 "api_time_ms": timing["api_time_ms"],
                 "peak_gpu_memory_mib": max((float(row["gpu_memory_used_mib"]) for row in rows), default=None),
-                "peak_system_ram_bytes": max((int(row["system_used_bytes"]) for row in rows), default=None),
+                "peak_server_rss_bytes": max((int(row["server_rss_bytes"]) for row in rows), default=None),
+                "peak_kv_cache_tokens": max((int(row["kv_cache_tokens"]) for row in rows if row.get("kv_cache_tokens") not in (None, "")), default=None),
+                "peak_kv_cache_usage_ratio": max((float(row["kv_cache_usage_ratio"]) for row in rows if row.get("kv_cache_usage_ratio") not in (None, "")), default=None),
+                "peak_prompt_cache_bytes": max((int(row["prompt_cache_bytes"]) for row in rows if row.get("prompt_cache_bytes") not in (None, "")), default=None),
                 "sample_count": len(rows),
             })
 
@@ -185,13 +188,13 @@ def calculate_failures(results):
 def calculate_peak_memory(memory):
     total_gpu_memory = float(memory[0]["gpu_memory_total_mib"])
     peak_gpu_memory = max(float(row["gpu_memory_used_mib"]) for row in memory)
-    peak_ram_memory = max(int(row["system_used_bytes"]) for row in memory)
+    peak_server_rss_memory = max(int(row["server_rss_bytes"]) for row in memory)
 
     return {
         "peak_gpu_memory": peak_gpu_memory,
         "peak_gpu_memory_pct": peak_gpu_memory / total_gpu_memory * 100,
         "total_gpu_memory": total_gpu_memory,
-        "peak_ram_memory": peak_ram_memory,
+        "peak_server_rss_bytes": peak_server_rss_memory,
     }
 
 def calculate_prefix_metrics(results):

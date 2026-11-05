@@ -4,8 +4,8 @@ from pathlib import Path
 from measurement.calculate_metrics import load_data, filter_memory_by_time, calculate_failures, calculate_peak_memory, calculate_queueing_time, calculate_task_completion_time, calculate_throughput, calculate_output_length_difference, calculate_prefix_metrics, calculate_context_growth
 
 def main():
-    run_id = "concurrency-1-gap-1.0-cache-True-prefix"
-    results, memory = load_data(f"measurement/results/{run_id}/results.json",f"measurement/results/{run_id}/memory.csv")
+    run_id = "concurrency-1-gap-1.0-cache-True-test"
+    results, memory = load_data(f"measurement/results/{run_id}/results.json", "measurement/memory.csv")
     memory = filter_memory_by_time(results, memory)
 
     metrics = {

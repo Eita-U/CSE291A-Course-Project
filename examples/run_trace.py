@@ -13,15 +13,23 @@ from measurement.replay_trace import replay_trace
 
 async def main():
     cache_prompt = True
-    pre_gap_scale = 0.0
+    pre_gap_scale = 1.0
     concurrency = 1
     
     df = load_trace("data/processed/trace_32k.parquet")
     tasks = group_tasks(df)
 
     random.seed(42)
-    random_task_ids = random.sample(list(tasks), 1)
-    random_tasks = {task_id: tasks[task_id] for task_id in random_task_ids}
+
+    # For cache/context growth experiments
+    selected_task_ids = random.sample(list(tasks), 3)
+    task_index = 0
+    task_id = selected_task_ids[task_index]
+    random_tasks = {task_id: tasks[task_id]}
+
+    # For none-cache/context growth experiments
+    # random_task_ids = random.sample(list(tasks), 1)
+    # random_tasks = {task_id: tasks[task_id] for task_id in random_task_ids}
 
     async with QwenHTTPBackend(
         endpoint="http://127.0.0.1:8080/v1/chat/completions",
@@ -54,7 +62,7 @@ async def main():
         },
         "tasks": results
     }
-    run_id = (f"concurrency-{concurrency}-gap-{pre_gap_scale}-cache-{cache_prompt}-idle")
+    run_id = (f"concurrency-{concurrency}-gap-{pre_gap_scale}-cache-{cache_prompt}-prefix-{task_index}")
     output = Path(f"measurement/results/{run_id}/results.json")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(
