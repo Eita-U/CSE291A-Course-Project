@@ -1,0 +1,188 @@
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index a5cba1d..96a6408 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -3111,6 +3111,30 @@ private:
+                     res->n_tasks_deferred    = queue_tasks.queue_tasks_deferred_size();
+                     res->metrics             = metrics;
+ 
++                    // KV cache occupancy: sum of positions held by each slot's sequence
++                    {
++                        llama_memory_t mem = llama_get_memory(ctx_tgt);
++                        for (const server_slot & slot : slots) {
++                            const llama_pos pos_min = llama_memory_seq_pos_min(mem, slot.id);
++                            const llama_pos pos_max = llama_memory_seq_pos_max(mem, slot.id);
++                            if (pos_max >= 0) {
++                                res->n_kv_tokens_used += pos_max - pos_min + 1;
++                            }
++                        }
++                        res->n_kv_tokens_total = n_ctx;
++                    }
++
++                    if (prompt_cache) {
++                        res->prompt_cache_entries       = prompt_cache->states.size();
++                        res->prompt_cache_tokens        = prompt_cache->n_tokens();
++                        res->prompt_cache_bytes         = prompt_cache->size();
++                        res->prompt_cache_bytes_max     = prompt_cache->limit_size;
++                        res->prompt_cache_saves         = prompt_cache->n_saves;
++                        res->prompt_cache_loads         = prompt_cache->n_loads;
++                        res->prompt_cache_tokens_loaded = prompt_cache->n_tokens_loaded;
++                        res->prompt_cache_evictions     = prompt_cache->n_evictions;
++                    }
++
+                     if (task.metrics_reset_bucket) {
+                         metrics.reset_bucket();
+                     }
+diff --git a/tools/server/server-task.cpp b/tools/server/server-task.cpp
+index d7ac2a1..5caa72b 100644
+--- a/tools/server/server-task.cpp
++++ b/tools/server/server-task.cpp
+@@ -10,6 +10,7 @@
+ #include "speculative.h"
+ #include "server-common.h"
+ 
++#include <iomanip>
+ #include <sstream>
+ 
+ //
+@@ -1597,6 +1598,22 @@ std::string server_task_result_metrics::to_metrics() {
+             "spec_decode_num_drafts_total",
+             "Speculative: Total speculative decoding verification steps",
+             (double) metrics.n_draft_verif_steps
++        }, {
++            "prompt_cache_saves_total",
++            "Number of slot states copied from the GPU KV cache into the CPU RAM prompt cache",
++            (double) prompt_cache_saves
++        }, {
++            "prompt_cache_loads_total",
++            "Number of slot states restored from the CPU RAM prompt cache into the GPU KV cache",
++            (double) prompt_cache_loads
++        }, {
++            "prompt_cache_loaded_tokens_total",
++            "Prompt prefix tokens matched by states restored from the CPU RAM prompt cache (cached-token hits that came from CPU RAM)",
++            (double) prompt_cache_tokens_loaded
++        }, {
++            "prompt_cache_evictions_total",
++            "Number of states dropped from the CPU RAM prompt cache to stay under its size limit (oldest first)",
++            (double) prompt_cache_evictions
+         },
+     };
+ 
+@@ -1621,10 +1638,39 @@ std::string server_task_result_metrics::to_metrics() {
+             "n_busy_slots_per_decode",
+             "Average number of busy slots per llama_decode() call",
+             (double) metrics.n_busy_slots / std::max((double) metrics.n_decode, 1.0)
++        }, {
++            "kv_cache_tokens",
++            "Tokens currently stored in the GPU KV cache, summed over all slots (idle slots included)",
++            (double) n_kv_tokens_used
++        }, {
++            "kv_cache_tokens_max",
++            "Capacity of the GPU KV cache in tokens (context size, n_ctx)",
++            (double) n_kv_tokens_total
++        }, {
++            "kv_cache_usage_ratio",
++            "kv_cache_tokens / kv_cache_tokens_max (0 = empty, 1 = full)",
++            (double) n_kv_tokens_used / std::max((double) n_kv_tokens_total, 1.0)
++        }, {
++            "prompt_cache_entries",
++            "Number of saved slot states currently held in the CPU RAM prompt cache",
++            (double) prompt_cache_entries
++        }, {
++            "prompt_cache_tokens",
++            "Total tokens across all states currently held in the CPU RAM prompt cache",
++            (double) prompt_cache_tokens
++        }, {
++            "prompt_cache_bytes",
++            "Bytes of CPU RAM currently used by the prompt cache",
++            (double) prompt_cache_bytes
++        }, {
++            "prompt_cache_bytes_max",
++            "Size limit of the CPU RAM prompt cache in bytes (--cache-ram, 0 = no limit or disabled)",
++            (double) prompt_cache_bytes_max
+         },
+     };
+ 
+     std::stringstream prometheus;
++    prometheus << std::setprecision(15); // default (6 digits) rounds large counters, e.g. 1234567 -> 1.23457e+06
+ 
+     auto add_items = [&prometheus](const char * type, const std::vector<metric_item> & items) {
+         for (const auto & item : items) {
+@@ -1789,6 +1835,7 @@ server_prompt_cache_state * server_prompt_cache::alloc(const server_prompt & pro
+                     states.front().size() / (1024.0 * 1024.0));
+ 
+             states.pop_front();
++            n_evictions++;
+         }
+     }
+ 
+@@ -1821,6 +1868,7 @@ server_prompt_cache_state * server_prompt_cache::alloc(const server_prompt & pro
+             /*.drft =*/ std::move(state_data_dft),
+         },
+     });
++    n_saves++;
+ 
+     return &states.back();
+ }
+@@ -1897,6 +1945,9 @@ bool server_prompt_cache::load(server_prompt & prompt, const server_tokens & tok
+         prompt = std::move(it_best->prompt);
+ 
+         states.erase(it_best);
++
++        n_loads++;
++        n_tokens_loaded += prompt.tokens.get_common_prefix(tokens_new);
+     }
+ 
+     return true;
+@@ -1908,6 +1959,7 @@ void server_prompt_cache::update() {
+             SRV_WRN(" - cache size limit reached, removing oldest entry (size = %.3f MiB)\n", states.front().size() / (1024.0 * 1024.0));
+ 
+             states.pop_front();
++            n_evictions++;
+         }
+     }
+ 
+@@ -1923,6 +1975,7 @@ void server_prompt_cache::update() {
+                     limit_tokens, limit_tokens_cur, states.front().size() / (1024.0 * 1024.0));
+ 
+             states.pop_front();
++            n_evictions++;
+         }
+     }
+ 
+diff --git a/tools/server/server-task.h b/tools/server/server-task.h
+index d6b6f4b..96b6281 100644
+--- a/tools/server/server-task.h
++++ b/tools/server/server-task.h
+@@ -579,6 +579,18 @@ struct server_task_result_metrics : server_task_result {
+     // these are immediate stats, not accumulated (server_metrics is cumulative)
+     int n_processing_slots = 0;
+     int n_tasks_deferred = 0;
++    int64_t n_kv_tokens_used = 0;  // KV cells held by all slots (including idle slots kept for prefix reuse)
++    int64_t n_kv_tokens_total = 0; // total KV capacity (n_ctx)
++
++    // host-RAM prompt cache (--cache-ram), all zero when disabled
++    uint64_t prompt_cache_entries   = 0;
++    uint64_t prompt_cache_tokens    = 0;
++    uint64_t prompt_cache_bytes     = 0;
++    uint64_t prompt_cache_bytes_max = 0;
++    uint64_t prompt_cache_saves     = 0;
++    uint64_t prompt_cache_loads     = 0;
++    uint64_t prompt_cache_tokens_loaded = 0;
++    uint64_t prompt_cache_evictions = 0;
+ 
+     server_metrics metrics;
+ 
+@@ -708,6 +720,12 @@ struct server_prompt_cache {
+     // in tokens, 0 = no limit
+     size_t limit_tokens = 0;
+ 
++    // cumulative stats, exported by /metrics
++    uint64_t n_saves          = 0; // states copied from a slot into the cache
++    uint64_t n_loads          = 0; // states restored from the cache into a slot
++    uint64_t n_tokens_loaded  = 0; // prompt prefix tokens covered by restored states
++    uint64_t n_evictions      = 0; // states dropped to stay under the size/token limit
++
+     size_t size() const;
+ 
+     size_t n_tokens() const;

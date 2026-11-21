@@ -47,7 +47,7 @@ class QwenHTTPBackendTests(unittest.IsolatedAsyncioTestCase):
         async with httpx.AsyncClient(transport=httpx.MockTransport(responder)) as client:
             backend = QwenHTTPBackend("http://example.test/completion", api_style="llama_cpp", client=client)
             answer = await backend.generate({"prompt": "Hello", "generation_settings": {"max_tokens": 16}})
-        self.assertEqual(answer, {"response": "Native answer", "token_usage": {"prompt_tokens": 5, "completion_tokens": 3}})
+        self.assertEqual(answer, {"response": "Native answer", "token_usage": {"prompt_tokens": 5, "completion_tokens": 3}, "backend_timings": {}})
 
     async def test_http_failure_propagates_to_scheduler(self):
         transport = httpx.MockTransport(lambda req: httpx.Response(503, json={"error": "down"}))

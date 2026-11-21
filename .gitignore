@@ -6,4 +6,8 @@ llama.cpp
 models
 results/
 .idea/
+data/raw/
+data/processed/
+.ipynb_checkpoints/
+measurement/results.json
 

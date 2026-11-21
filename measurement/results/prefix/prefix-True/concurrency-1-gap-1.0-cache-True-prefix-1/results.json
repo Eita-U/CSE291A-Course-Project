@@ -1,0 +1,1676 @@
+{
+  "config": {
+    "concurrency": 1,
+    "cache_prompt": true,
+    "pre_gap_scale": 1.0
+  },
+  "timing_metadata": {
+    "run_start_time": "2026-11-04T02:55:56.964579+00:00",
+    "run_finish_time": "2026-11-04T02:57:40.543869+00:00",
+    "run_duration_ms": 103579.27485497203
+  },
+  "tasks": {
+    "swebench__django__django-14007__minimax": {
+      "task_id": "swebench__django__django-14007__minimax",
+      "status": "success",
+      "n_steps_completed": 50,
+      "timing_metadata": {
+        "task_start_time": "2026-11-04T02:55:56.967728+00:00",
+        "task_finish_time": "2026-11-04T02:57:40.543386+00:00",
+        "task_duration_ms": 103575.64827997703
+      },
+      "requests": [
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-1",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 1,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:55:56.969045Z",
+            "execution_start_time": "2026-11-04T02:55:56.969083Z",
+            "execution_finish_time": "2026-11-04T02:55:58.964715Z",
+            "queue_time_ms": 0.038300990127027035,
+            "api_time_ms": 1995.63057301566,
+            "total_time_ms": 1995.668874005787
+          },
+          "token_usage": {
+            "prompt_tokens": 8394,
+            "completion_tokens": 95
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 0,
+            "prompt_n": 8394,
+            "prompt_ms": 791.697,
+            "prompt_per_token_ms": 0.09431701215153682,
+            "prompt_per_second": 10602.541123687472,
+            "predicted_n": 95,
+            "predicted_ms": 1161.845,
+            "predicted_per_token_ms": 12.360053191489362,
+            "predicted_per_second": 80.90580068769931
+          },
+          "target_output_tokens": 95
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-2",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 2,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:55:59.007539Z",
+            "execution_start_time": "2026-11-04T02:55:59.007625Z",
+            "execution_finish_time": "2026-11-04T02:56:00.342444Z",
+            "queue_time_ms": 0.0886720372363925,
+            "api_time_ms": 1334.8180450266227,
+            "total_time_ms": 1334.906717063859
+          },
+          "token_usage": {
+            "prompt_tokens": 8422,
+            "completion_tokens": 106
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 8392,
+            "prompt_n": 30,
+            "prompt_ms": 19.322,
+            "prompt_per_token_ms": 0.6440666666666667,
+            "prompt_per_second": 1552.6343028671981,
+            "predicted_n": 106,
+            "predicted_ms": 1293.736,
+            "predicted_per_token_ms": 12.321295238095239,
+            "predicted_per_second": 81.1602985462258
+          },
+          "target_output_tokens": 106
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-3",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 3,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:01.047232Z",
+            "execution_start_time": "2026-11-04T02:56:01.047309Z",
+            "execution_finish_time": "2026-11-04T02:56:01.818620Z",
+            "queue_time_ms": 0.07835100404918194,
+            "api_time_ms": 771.3106849696487,
+            "total_time_ms": 771.3890359736979
+          },
+          "token_usage": {
+            "prompt_tokens": 8837,
+            "completion_tokens": 57
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 8422,
+            "prompt_n": 415,
+            "prompt_ms": 49.3,
+            "prompt_per_token_ms": 0.11879518072289157,
+            "prompt_per_second": 8417.849898580122,
+            "predicted_n": 57,
+            "predicted_ms": 699.897,
+            "predicted_per_token_ms": 12.498160714285715,
+            "predicted_per_second": 80.01177316090795
+          },
+          "target_output_tokens": 57
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-4",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 4,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:02.503969Z",
+            "execution_start_time": "2026-11-04T02:56:02.504032Z",
+            "execution_finish_time": "2026-11-04T02:56:03.946525Z",
+            "queue_time_ms": 0.06495206616818905,
+            "api_time_ms": 1442.4915859708562,
+            "total_time_ms": 1442.5565380370244
+          },
+          "token_usage": {
+            "prompt_tokens": 11035,
+            "completion_tokens": 84
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 8837,
+            "prompt_n": 2198,
+            "prompt_ms": 292.625,
+            "prompt_per_token_ms": 0.13313239308462238,
+            "prompt_per_second": 7511.319948739855,
+            "predicted_n": 84,
+            "predicted_ms": 1125.017,
+            "predicted_per_token_ms": 13.554421686746988,
+            "predicted_per_second": 73.77666293042682
+          },
+          "target_output_tokens": 84
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-5",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 5,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:04.631896Z",
+            "execution_start_time": "2026-11-04T02:56:04.632051Z",
+            "execution_finish_time": "2026-11-04T02:56:05.548139Z",
+            "queue_time_ms": 0.15592400450259447,
+            "api_time_ms": 916.0868759499863,
+            "total_time_ms": 916.2427999544889
+          },
+          "token_usage": {
+            "prompt_tokens": 11420,
+            "completion_tokens": 62
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 11035,
+            "prompt_n": 385,
+            "prompt_ms": 57.255,
+            "prompt_per_token_ms": 0.14871428571428572,
+            "prompt_per_second": 6724.303554274735,
+            "predicted_n": 62,
+            "predicted_ms": 833.915,
+            "predicted_per_token_ms": 13.670737704918032,
+            "predicted_per_second": 73.14894203845716
+          },
+          "target_output_tokens": 62
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-6",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 6,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:06.237503Z",
+            "execution_start_time": "2026-11-04T02:56:06.237581Z",
+            "execution_finish_time": "2026-11-04T02:56:07.858212Z",
+            "queue_time_ms": 0.07993204053491354,
+            "api_time_ms": 1620.6295309821144,
+            "total_time_ms": 1620.7094630226493
+          },
+          "token_usage": {
+            "prompt_tokens": 12188,
+            "completion_tokens": 106
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 11420,
+            "prompt_n": 768,
+            "prompt_ms": 120.565,
+            "prompt_per_token_ms": 0.15698567708333333,
+            "prompt_per_second": 6370.007879567038,
+            "predicted_n": 106,
+            "predicted_ms": 1474.388,
+            "predicted_per_token_ms": 14.041790476190476,
+            "predicted_per_second": 71.21598927826325
+          },
+          "target_output_tokens": 106
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-7",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 7,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:08.998274Z",
+            "execution_start_time": "2026-11-04T02:56:08.998347Z",
+            "execution_finish_time": "2026-11-04T02:56:10.453237Z",
+            "queue_time_ms": 0.07465097587555647,
+            "api_time_ms": 1454.8885740805417,
+            "total_time_ms": 1454.9632250564173
+          },
+          "token_usage": {
+            "prompt_tokens": 12802,
+            "completion_tokens": 93
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 12188,
+            "prompt_n": 614,
+            "prompt_ms": 107.078,
+            "prompt_per_token_ms": 0.1743941368078176,
+            "prompt_per_second": 5734.137731373391,
+            "predicted_n": 93,
+            "predicted_ms": 1320.375,
+            "predicted_per_token_ms": 14.351902173913043,
+            "predicted_per_second": 69.67717504496828
+          },
+          "target_output_tokens": 93
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-8",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 8,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:11.145581Z",
+            "execution_start_time": "2026-11-04T02:56:11.145658Z",
+            "execution_finish_time": "2026-11-04T02:56:12.434243Z",
+            "queue_time_ms": 0.07797195576131344,
+            "api_time_ms": 1288.5847230209038,
+            "total_time_ms": 1288.662694976665
+          },
+          "token_usage": {
+            "prompt_tokens": 13036,
+            "completion_tokens": 85
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 12802,
+            "prompt_n": 234,
+            "prompt_ms": 45.238,
+            "prompt_per_token_ms": 0.19332478632478634,
+            "prompt_per_second": 5172.6424687209865,
+            "predicted_n": 85,
+            "predicted_ms": 1215.403,
+            "predicted_per_token_ms": 14.469083333333334,
+            "predicted_per_second": 69.11287860898813
+          },
+          "target_output_tokens": 85
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-9",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 9,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:12.497008Z",
+            "execution_start_time": "2026-11-04T02:56:12.497081Z",
+            "execution_finish_time": "2026-11-04T02:56:14.262289Z",
+            "queue_time_ms": 0.07283093873411417,
+            "api_time_ms": 1765.2080380357802,
+            "total_time_ms": 1765.2808689745143
+          },
+          "token_usage": {
+            "prompt_tokens": 13464,
+            "completion_tokens": 116
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 13036,
+            "prompt_n": 428,
+            "prompt_ms": 57.074,
+            "prompt_per_token_ms": 0.1333504672897196,
+            "prompt_per_second": 7499.03633878824,
+            "predicted_n": 116,
+            "predicted_ms": 1680.153,
+            "predicted_per_token_ms": 14.610026086956521,
+            "predicted_per_second": 68.44614746395119
+          },
+          "target_output_tokens": 116
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-10",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 10,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:15.038808Z",
+            "execution_start_time": "2026-11-04T02:56:15.038887Z",
+            "execution_finish_time": "2026-11-04T02:56:16.265403Z",
+            "queue_time_ms": 0.08016102947294712,
+            "api_time_ms": 1226.5162139665335,
+            "total_time_ms": 1226.5963749960065
+          },
+          "token_usage": {
+            "prompt_tokens": 13686,
+            "completion_tokens": 80
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 13464,
+            "prompt_n": 222,
+            "prompt_ms": 35.24,
+            "prompt_per_token_ms": 0.15873873873873875,
+            "prompt_per_second": 6299.659477866061,
+            "predicted_n": 80,
+            "predicted_ms": 1161.562,
+            "predicted_per_token_ms": 14.703316455696202,
+            "predicted_per_second": 68.01186677938846
+          },
+          "target_output_tokens": 80
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-11",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 11,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:16.330189Z",
+            "execution_start_time": "2026-11-04T02:56:16.330266Z",
+            "execution_finish_time": "2026-11-04T02:56:18.596243Z",
+            "queue_time_ms": 0.07721199654042721,
+            "api_time_ms": 2265.976738068275,
+            "total_time_ms": 2266.0539500648156
+          },
+          "token_usage": {
+            "prompt_tokens": 14275,
+            "completion_tokens": 142
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 13686,
+            "prompt_n": 589,
+            "prompt_ms": 115.916,
+            "prompt_per_token_ms": 0.1968013582342954,
+            "prompt_per_second": 5081.265744159564,
+            "predicted_n": 142,
+            "predicted_ms": 2119.625,
+            "predicted_per_token_ms": 15.032801418439716,
+            "predicted_per_second": 66.52120068408327
+          },
+          "target_output_tokens": 142
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-12",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 12,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:19.301700Z",
+            "execution_start_time": "2026-11-04T02:56:19.301781Z",
+            "execution_finish_time": "2026-11-04T02:56:20.392262Z",
+            "queue_time_ms": 0.08299201726913452,
+            "api_time_ms": 1090.480151004158,
+            "total_time_ms": 1090.563143021427
+          },
+          "token_usage": {
+            "prompt_tokens": 14411,
+            "completion_tokens": 69
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 14275,
+            "prompt_n": 136,
+            "prompt_ms": 34.421,
+            "prompt_per_token_ms": 0.2530955882352941,
+            "prompt_per_second": 3951.0763777926263,
+            "predicted_n": 69,
+            "predicted_ms": 1023.594,
+            "predicted_per_token_ms": 15.052852941176472,
+            "predicted_per_second": 66.43258948372109
+          },
+          "target_output_tokens": 69
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-13",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 13,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:21.096173Z",
+            "execution_start_time": "2026-11-04T02:56:21.096223Z",
+            "execution_finish_time": "2026-11-04T02:56:22.409976Z",
+            "queue_time_ms": 0.051471986807882786,
+            "api_time_ms": 1313.7504290789366,
+            "total_time_ms": 1313.8019010657445
+          },
+          "token_usage": {
+            "prompt_tokens": 14614,
+            "completion_tokens": 83
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 14411,
+            "prompt_n": 203,
+            "prompt_ms": 35.507,
+            "prompt_per_token_ms": 0.17491133004926107,
+            "prompt_per_second": 5717.182527388966,
+            "predicted_n": 83,
+            "predicted_ms": 1245.334,
+            "predicted_per_token_ms": 15.187000000000001,
+            "predicted_per_second": 65.8457891617831
+          },
+          "target_output_tokens": 83
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-14",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 14,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -n \"from_db_value\" /workspace/django/django/db/models/fields/__init__.py | head -20</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:22.502822Z",
+            "execution_start_time": "2026-11-04T02:56:22.502895Z",
+            "execution_finish_time": "2026-11-04T02:56:23.514657Z",
+            "queue_time_ms": 0.07397204171866179,
+            "api_time_ms": 1011.7613630136475,
+            "total_time_ms": 1011.8353350553662
+          },
+          "token_usage": {
+            "prompt_tokens": 14951,
+            "completion_tokens": 61
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 14614,
+            "prompt_n": 337,
+            "prompt_ms": 59.699,
+            "prompt_per_token_ms": 0.17714836795252226,
+            "prompt_per_second": 5644.985678152063,
+            "predicted_n": 61,
+            "predicted_ms": 918.866,
+            "predicted_per_token_ms": 15.314433333333334,
+            "predicted_per_second": 65.2978780366234
+          },
+          "target_output_tokens": 147
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-15",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 15,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:24.228017Z",
+            "execution_start_time": "2026-11-04T02:56:24.228068Z",
+            "execution_finish_time": "2026-11-04T02:56:25.897356Z",
+            "queue_time_ms": 0.05287094973027706,
+            "api_time_ms": 1669.2864029901102,
+            "total_time_ms": 1669.3392739398405
+          },
+          "token_usage": {
+            "prompt_tokens": 15635,
+            "completion_tokens": 96
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 14951,
+            "prompt_n": 684,
+            "prompt_ms": 149.307,
+            "prompt_per_token_ms": 0.21828508771929822,
+            "prompt_per_second": 4581.164982217847,
+            "predicted_n": 96,
+            "predicted_ms": 1485.871,
+            "predicted_per_token_ms": 15.640747368421053,
+            "predicted_per_second": 63.935563719865314
+          },
+          "target_output_tokens": 96
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-16",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 16,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -rn \"get_db_converters\" /workspace/django/django/db --include=\"*.py\" | head -30</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:25.958240Z",
+            "execution_start_time": "2026-11-04T02:56:25.958309Z",
+            "execution_finish_time": "2026-11-04T02:56:27.089793Z",
+            "queue_time_ms": 0.0702819088473916,
+            "api_time_ms": 1131.4829180482775,
+            "total_time_ms": 1131.553199957125
+          },
+          "token_usage": {
+            "prompt_tokens": 16217,
+            "completion_tokens": 61
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 15635,
+            "prompt_n": 582,
+            "prompt_ms": 142.678,
+            "prompt_per_token_ms": 0.2451512027491409,
+            "prompt_per_second": 4079.1152104739344,
+            "predicted_n": 61,
+            "predicted_ms": 953.443,
+            "predicted_per_token_ms": 15.890716666666666,
+            "predicted_per_second": 62.929823806981645
+          },
+          "target_output_tokens": 131
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-17",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 17,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:27.796271Z",
+            "execution_start_time": "2026-11-04T02:56:27.796330Z",
+            "execution_finish_time": "2026-11-04T02:56:29.237497Z",
+            "queue_time_ms": 0.060632009990513325,
+            "api_time_ms": 1441.1657029995695,
+            "total_time_ms": 1441.22633500956
+          },
+          "token_usage": {
+            "prompt_tokens": 16508,
+            "completion_tokens": 84
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 16217,
+            "prompt_n": 291,
+            "prompt_ms": 76.045,
+            "prompt_per_token_ms": 0.2613230240549828,
+            "prompt_per_second": 3826.6815701229534,
+            "predicted_n": 84,
+            "predicted_ms": 1328.143,
+            "predicted_per_token_ms": 16.001722891566267,
+            "predicted_per_second": 62.49327067943738
+          },
+          "target_output_tokens": 84
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-18",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 18,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -n \"execute_sql\" /workspace/django/django/db/models/fields/__init__.py | head -30</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:29.302326Z",
+            "execution_start_time": "2026-11-04T02:56:29.302396Z",
+            "execution_finish_time": "2026-11-04T02:56:30.558697Z",
+            "queue_time_ms": 0.0711618922650814,
+            "api_time_ms": 1256.3002610113472,
+            "total_time_ms": 1256.3714229036123
+          },
+          "token_usage": {
+            "prompt_tokens": 17525,
+            "completion_tokens": 60
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 16508,
+            "prompt_n": 1017,
+            "prompt_ms": 243.289,
+            "prompt_per_token_ms": 0.2392222222222222,
+            "prompt_per_second": 4180.213655364608,
+            "predicted_n": 60,
+            "predicted_ms": 973.884,
+            "predicted_per_token_ms": 16.506508474576272,
+            "predicted_per_second": 60.5821637895273
+          },
+          "target_output_tokens": 240
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-19",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 19,
+          "response": "",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:31.270291Z",
+            "execution_start_time": "2026-11-04T02:56:31.270375Z",
+            "execution_finish_time": "2026-11-04T02:56:36.774128Z",
+            "queue_time_ms": 0.08618202991783619,
+            "api_time_ms": 5503.752115997486,
+            "total_time_ms": 5503.838298027404
+          },
+          "token_usage": {
+            "prompt_tokens": 17703,
+            "completion_tokens": 326
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 17525,
+            "prompt_n": 178,
+            "prompt_ms": 62.0,
+            "prompt_per_token_ms": 0.34831460674157305,
+            "prompt_per_second": 2870.967741935484,
+            "predicted_n": 326,
+            "predicted_ms": 5402.536,
+            "predicted_per_token_ms": 16.62318769230769,
+            "predicted_per_second": 60.156933706688854
+          },
+          "target_output_tokens": 326
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-20",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 20,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -n \"apply_converters\" /workspace/django/django/db/models/sql/compiler.py | head -30</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:36.843075Z",
+            "execution_start_time": "2026-11-04T02:56:36.843162Z",
+            "execution_finish_time": "2026-11-04T02:56:37.922057Z",
+            "queue_time_ms": 0.08786201942712069,
+            "api_time_ms": 1078.8940989878029,
+            "total_time_ms": 1078.98196100723
+          },
+          "token_usage": {
+            "prompt_tokens": 18081,
+            "completion_tokens": 58
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 17703,
+            "prompt_n": 378,
+            "prompt_ms": 85.261,
+            "prompt_per_token_ms": 0.22555820105820104,
+            "prompt_per_second": 4433.445537819168,
+            "predicted_n": 58,
+            "predicted_ms": 953.08,
+            "predicted_per_token_ms": 16.720701754385967,
+            "predicted_per_second": 59.80610232089646
+          },
+          "target_output_tokens": 151
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-21",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 21,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -n \"insert\" /workspace/django/django/db/models/query.py | head -30</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:37.989046Z",
+            "execution_start_time": "2026-11-04T02:56:37.989137Z",
+            "execution_finish_time": "2026-11-04T02:56:39.163766Z",
+            "queue_time_ms": 0.09263202082365751,
+            "api_time_ms": 1174.6284989640117,
+            "total_time_ms": 1174.7211309848353
+          },
+          "token_usage": {
+            "prompt_tokens": 18846,
+            "completion_tokens": 55
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 18081,
+            "prompt_n": 765,
+            "prompt_ms": 210.025,
+            "prompt_per_token_ms": 0.27454248366013073,
+            "prompt_per_second": 3642.4235210094034,
+            "predicted_n": 55,
+            "predicted_ms": 922.281,
+            "predicted_per_token_ms": 17.079277777777776,
+            "predicted_per_second": 58.55048515582561
+          },
+          "target_output_tokens": 326
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-22",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 22,
+          "response": "<function=str_replace_editor>\n<parameter=command>str_replace</parameter>\n<parameter=path>/workspace/django/django/db/models/base.py</parameter>\n<parameter=old_str>return str(numbers)</parameter>\n<parameter=new_str>return '<table>' + ''.join([f'<tr><td>{i}</td></tr>' for i in numbers]) + '</table>'</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:39.222710Z",
+            "execution_start_time": "2026-11-04T02:56:39.222788Z",
+            "execution_finish_time": "2026-11-04T02:56:40.820356Z",
+            "queue_time_ms": 0.07939198985695839,
+            "api_time_ms": 1597.5669759791344,
+            "total_time_ms": 1597.6463679689914
+          },
+          "token_usage": {
+            "prompt_tokens": 19053,
+            "completion_tokens": 89
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 18846,
+            "prompt_n": 207,
+            "prompt_ms": 41.135,
+            "prompt_per_token_ms": 0.19871980676328502,
+            "prompt_per_second": 5032.211012519752,
+            "predicted_n": 89,
+            "predicted_ms": 1512.848,
+            "predicted_per_token_ms": 17.191454545454544,
+            "predicted_per_second": 58.168434634543594
+          },
+          "target_output_tokens": 98
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-23",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 23,
+          "response": "<function=str_replace_editor>\n<parameter=command>view</parameter>\n<parameter=path>/workspace/django/django/db/models/base.py</parameter>\n<parameter=view_range>[890, 910]</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:40.890337Z",
+            "execution_start_time": "2026-11-04T02:56:40.890382Z",
+            "execution_finish_time": "2026-11-04T02:56:42.208388Z",
+            "queue_time_ms": 0.04501105286180973,
+            "api_time_ms": 1318.0046030320227,
+            "total_time_ms": 1318.0496140848845
+          },
+          "token_usage": {
+            "prompt_tokens": 19550,
+            "completion_tokens": 66
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 19053,
+            "prompt_n": 497,
+            "prompt_ms": 139.945,
+            "prompt_per_token_ms": 0.28157947686116697,
+            "prompt_per_second": 3551.3951909678804,
+            "predicted_n": 66,
+            "predicted_ms": 1134.689,
+            "predicted_per_token_ms": 17.45675384615385,
+            "predicted_per_second": 57.28441890244816
+          },
+          "target_output_tokens": 81
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-24",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 24,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -n \"field.get_db_converters\" /workspace/django/django/db/models/base.py | head -20</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:42.262367Z",
+            "execution_start_time": "2026-11-04T02:56:42.262412Z",
+            "execution_finish_time": "2026-11-04T02:56:43.342631Z",
+            "queue_time_ms": 0.045460998080670834,
+            "api_time_ms": 1080.2175690187141,
+            "total_time_ms": 1080.2630300167948
+          },
+          "token_usage": {
+            "prompt_tokens": 19581,
+            "completion_tokens": 59
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 19548,
+            "prompt_n": 33,
+            "prompt_ms": 25.782,
+            "prompt_per_token_ms": 0.7812727272727272,
+            "prompt_per_second": 1279.9627647195716,
+            "predicted_n": 59,
+            "predicted_ms": 1010.89,
+            "predicted_per_token_ms": 17.429137931034482,
+            "predicted_per_second": 57.375184243587334
+          },
+          "target_output_tokens": 94
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-25",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 25,
+          "response": "<function=str_replace_editor>\n<parameter=command>view</parameter>\n<parameter=path>/workspace/django/django/db/models/base.py</parameter>\n<parameter=view_range>[890, 910]</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:43.417515Z",
+            "execution_start_time": "2026-11-04T02:56:43.417560Z",
+            "execution_finish_time": "2026-11-04T02:56:44.860463Z",
+            "queue_time_ms": 0.04700093995779753,
+            "api_time_ms": 1442.90083902888,
+            "total_time_ms": 1442.9478399688378
+          },
+          "token_usage": {
+            "prompt_tokens": 20451,
+            "completion_tokens": 66
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 19581,
+            "prompt_n": 870,
+            "prompt_ms": 233.816,
+            "prompt_per_token_ms": 0.26875402298850576,
+            "prompt_per_second": 3720.8745338214667,
+            "predicted_n": 66,
+            "predicted_ms": 1164.116,
+            "predicted_per_token_ms": 17.909476923076923,
+            "predicted_per_second": 55.83635995038295
+          },
+          "target_output_tokens": 79
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-26",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 26,
+          "response": "<function=str_replace_editor>\n<parameter=command>view</parameter>\n<parameter=path>/workspace/django/django/db/models/base.py</parameter>\n<parameter=view_range>[1600, 1630]</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:45.539082Z",
+            "execution_start_time": "2026-11-04T02:56:45.539165Z",
+            "execution_finish_time": "2026-11-04T02:56:46.888534Z",
+            "queue_time_ms": 0.08479191455990076,
+            "api_time_ms": 1349.3690780596808,
+            "total_time_ms": 1349.4538699742407
+          },
+          "token_usage": {
+            "prompt_tokens": 20806,
+            "completion_tokens": 68
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 20451,
+            "prompt_n": 355,
+            "prompt_ms": 92.843,
+            "prompt_per_token_ms": 0.2615295774647887,
+            "prompt_per_second": 3823.6592958004376,
+            "predicted_n": 68,
+            "predicted_ms": 1210.172,
+            "predicted_per_token_ms": 18.06226865671642,
+            "predicted_per_second": 55.364030898087215
+          },
+          "target_output_tokens": 94
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-27",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 27,
+          "response": "<function=str_replace_editor>\n<parameter=command>view</parameter>\n<parameter=path>/workspace/django/django/db/models/base.py</parameter>\n<parameter=view_range>[930, 950]</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:46.926485Z",
+            "execution_start_time": "2026-11-04T02:56:46.926548Z",
+            "execution_finish_time": "2026-11-04T02:56:48.255228Z",
+            "queue_time_ms": 0.064122024923563,
+            "api_time_ms": 1328.678010031581,
+            "total_time_ms": 1328.7421320565045
+          },
+          "token_usage": {
+            "prompt_tokens": 21190,
+            "completion_tokens": 66
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 20806,
+            "prompt_n": 384,
+            "prompt_ms": 96.161,
+            "prompt_per_token_ms": 0.2504192708333333,
+            "prompt_per_second": 3993.302898264369,
+            "predicted_n": 66,
+            "predicted_ms": 1185.254,
+            "predicted_per_token_ms": 18.234676923076922,
+            "predicted_per_second": 54.840565819647104
+          },
+          "target_output_tokens": 97
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-28",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 28,
+          "response": "<function=str_replace_editor>\n<parameter=command>view</parameter>\n<parameter=path>/workspace/django/django/db/models/query.py</parameter>\n<parameter=view_range>[525, 550]</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:48.319271Z",
+            "execution_start_time": "2026-11-04T02:56:48.319358Z",
+            "execution_finish_time": "2026-11-04T02:56:49.843399Z",
+            "queue_time_ms": 0.08867308497428894,
+            "api_time_ms": 1524.0392369451001,
+            "total_time_ms": 1524.1279100300744
+          },
+          "token_usage": {
+            "prompt_tokens": 21993,
+            "completion_tokens": 66
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 21190,
+            "prompt_n": 803,
+            "prompt_ms": 261.236,
+            "prompt_per_token_ms": 0.3253250311332503,
+            "prompt_per_second": 3073.8489335313666,
+            "predicted_n": 66,
+            "predicted_ms": 1214.067,
+            "predicted_per_token_ms": 18.677953846153848,
+            "predicted_per_second": 53.539055093335044
+          },
+          "target_output_tokens": 377
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-29",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 29,
+          "response": "<function=str_replace_editor>\n<parameter=command>str_replace</parameter>\n<parameter=path>/workspace/django/django/db/models/base.py</parameter>\n<parameter=old_str>return updated</parameter>\n<parameter=new_str>return self._apply_converters(updated, self.model._meta.db_returning_fields)</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:49.905449Z",
+            "execution_start_time": "2026-11-04T02:56:49.905531Z",
+            "execution_finish_time": "2026-11-04T02:56:51.593462Z",
+            "queue_time_ms": 0.08352100849151611,
+            "api_time_ms": 1687.9300309810787,
+            "total_time_ms": 1688.0135519895703
+          },
+          "token_usage": {
+            "prompt_tokens": 22215,
+            "completion_tokens": 86
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 21993,
+            "prompt_n": 222,
+            "prompt_ms": 44.78,
+            "prompt_per_token_ms": 0.2017117117117117,
+            "prompt_per_second": 4957.570343903528,
+            "predicted_n": 86,
+            "predicted_ms": 1594.096,
+            "predicted_per_token_ms": 18.754070588235294,
+            "predicted_per_second": 53.32175728437936
+          },
+          "target_output_tokens": 209
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-30",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 30,
+          "response": "<function=str_replace_editor>\n<parameter=command>view</parameter>\n<parameter=path>/workspace/django/django/db/backends/base/operations.py</parameter>\n<parameter=view_range>[560, 580]</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:52.316217Z",
+            "execution_start_time": "2026-11-04T02:56:52.316307Z",
+            "execution_finish_time": "2026-11-04T02:56:53.693197Z",
+            "queue_time_ms": 0.09275204502046108,
+            "api_time_ms": 1376.8886829493567,
+            "total_time_ms": 1376.9814349943772
+          },
+          "token_usage": {
+            "prompt_tokens": 22350,
+            "completion_tokens": 69
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 22215,
+            "prompt_n": 135,
+            "prompt_ms": 47.046,
+            "prompt_per_token_ms": 0.3484888888888889,
+            "prompt_per_second": 2869.531947455682,
+            "predicted_n": 69,
+            "predicted_ms": 1280.369,
+            "predicted_per_token_ms": 18.82895588235294,
+            "predicted_per_second": 53.1096894723318
+          },
+          "target_output_tokens": 173
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-31",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 31,
+          "response": "<function=str_replace_editor>\n<parameter=command>view</parameter>\n<parameter=path>/workspace/django/django/db/models/sql/compiler.py</parameter>\n<parameter=view_range>[1080, 1110]</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:53.813377Z",
+            "execution_start_time": "2026-11-04T02:56:53.813461Z",
+            "execution_finish_time": "2026-11-04T02:56:55.269028Z",
+            "queue_time_ms": 0.08657202124595642,
+            "api_time_ms": 1455.5653770221397,
+            "total_time_ms": 1455.6519490433857
+          },
+          "token_usage": {
+            "prompt_tokens": 22660,
+            "completion_tokens": 69
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 22350,
+            "prompt_n": 310,
+            "prompt_ms": 115.283,
+            "prompt_per_token_ms": 0.3718806451612903,
+            "prompt_per_second": 2689.0348099893304,
+            "predicted_n": 69,
+            "predicted_ms": 1289.109,
+            "predicted_per_token_ms": 18.957485294117646,
+            "predicted_per_second": 52.74961232913586
+          },
+          "target_output_tokens": 235
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-32",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 32,
+          "response": "<function=str_replace_editor>\n<parameter=command>str_replace</parameter>\n<parameter=path>/workspace/django/django/db/models/base.py</parameter>\n<parameter=old_str>return updated</parameter>\n<parameter=new_str>return self._apply_converters(updated, returning_fields)</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:55.354200Z",
+            "execution_start_time": "2026-11-04T02:56:55.354281Z",
+            "execution_finish_time": "2026-11-04T02:56:57.028531Z",
+            "queue_time_ms": 0.08169200737029314,
+            "api_time_ms": 1674.2490859469399,
+            "total_time_ms": 1674.3307779543102
+          },
+          "token_usage": {
+            "prompt_tokens": 23110,
+            "completion_tokens": 80
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 22660,
+            "prompt_n": 450,
+            "prompt_ms": 104.841,
+            "prompt_per_token_ms": 0.23298,
+            "prompt_per_second": 4292.213923941969,
+            "predicted_n": 80,
+            "predicted_ms": 1517.202,
+            "predicted_per_token_ms": 19.205088607594938,
+            "predicted_per_second": 52.06953325924959
+          },
+          "target_output_tokens": 334
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-33",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 33,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -n \"field.from_db_value\" /workspace/django/django/db/models/fields/__init__.py | head -30\n</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:57.124596Z",
+            "execution_start_time": "2026-11-04T02:56:57.124676Z",
+            "execution_finish_time": "2026-11-04T02:56:58.552143Z",
+            "queue_time_ms": 0.08135195821523666,
+            "api_time_ms": 1427.4668180150911,
+            "total_time_ms": 1427.5481699733064
+          },
+          "token_usage": {
+            "prompt_tokens": 23597,
+            "completion_tokens": 63
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 23110,
+            "prompt_n": 487,
+            "prompt_ms": 167.798,
+            "prompt_per_token_ms": 0.34455441478439425,
+            "prompt_per_second": 2902.2991930773906,
+            "predicted_n": 63,
+            "predicted_ms": 1206.221,
+            "predicted_per_token_ms": 19.45517741935484,
+            "predicted_per_second": 51.400199465935344
+          },
+          "target_output_tokens": 473
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-34",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 34,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -n \"get_db_converters\" /workspace/django/django/db/models/fields/__init__.py | head -30\n</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:56:58.660037Z",
+            "execution_start_time": "2026-11-04T02:56:58.660093Z",
+            "execution_finish_time": "2026-11-04T02:57:00.136147Z",
+            "queue_time_ms": 0.057191005907952785,
+            "api_time_ms": 1476.0532439686358,
+            "total_time_ms": 1476.1104349745438
+          },
+          "token_usage": {
+            "prompt_tokens": 24155,
+            "completion_tokens": 63
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 23597,
+            "prompt_n": 558,
+            "prompt_ms": 197.676,
+            "prompt_per_token_ms": 0.354258064516129,
+            "prompt_per_second": 2822.800947004189,
+            "predicted_n": 63,
+            "predicted_ms": 1222.286,
+            "predicted_per_token_ms": 19.714290322580645,
+            "predicted_per_second": 50.724625824070635
+          },
+          "target_output_tokens": 191
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-35",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 35,
+          "response": "<function=str_replace_editor>\n<parameter=command>view</parameter>\n<parameter=path>/workspace/django/django/db/models/query.py</parameter>\n<parameter=view_range>[480, 525]</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:00.210053Z",
+            "execution_start_time": "2026-11-04T02:57:00.210096Z",
+            "execution_finish_time": "2026-11-04T02:57:01.605733Z",
+            "queue_time_ms": 0.043181004002690315,
+            "api_time_ms": 1395.6356709823012,
+            "total_time_ms": 1395.678851986304
+          },
+          "token_usage": {
+            "prompt_tokens": 24377,
+            "completion_tokens": 66
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 24155,
+            "prompt_n": 222,
+            "prompt_ms": 47.741,
+            "prompt_per_token_ms": 0.21504954954954955,
+            "prompt_per_second": 4650.091116650258,
+            "predicted_n": 66,
+            "predicted_ms": 1290.572,
+            "predicted_per_token_ms": 19.854953846153844,
+            "predicted_per_second": 50.36526439439257
+          },
+          "target_output_tokens": 101
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-36",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 36,
+          "response": "<function=str_replace_editor>\n<parameter=command>str_replace</parameter>\n<parameter=path>/workspace/django/django/db/models/query.py</parameter>\n<parameter=old_str>            for result, field in zip(results, opts.db_returning_fields):\n            setattr(obj_with_pk, field.attname, result)</parameter>\n<parameter=new_str>            for result, field in zip(results, opts.db_returning_fields):\n                for converter in field.get_db_converters(connection):\n                    result = converter(result, None, connection)\n                setattr(obj_with_pk, field.attname, result)</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:01.690817Z",
+            "execution_start_time": "2026-11-04T02:57:01.690889Z",
+            "execution_finish_time": "2026-11-04T02:57:04.782272Z",
+            "queue_time_ms": 0.0728820450603962,
+            "api_time_ms": 3091.38181200251,
+            "total_time_ms": 3091.4546940475702
+          },
+          "token_usage": {
+            "prompt_tokens": 24982,
+            "completion_tokens": 141
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 24377,
+            "prompt_n": 605,
+            "prompt_ms": 214.039,
+            "prompt_per_token_ms": 0.35378347107438013,
+            "prompt_per_second": 2826.5876779465425,
+            "predicted_n": 141,
+            "predicted_ms": 2821.218,
+            "predicted_per_token_ms": 20.151557142857143,
+            "predicted_per_second": 49.62395674492365
+          },
+          "target_output_tokens": 254
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-37",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 37,
+          "response": "<function=task_tracker>\n<parameter=command>plan</parameter>\n<parameter=task_list>[{\"content\": \"Understand the issue: returning_fields values not passed through database converters\", \"id\": \"1\", \"status\": \"completed\"}, {\"content\": \"Fix base.py: Apply converters in save() method after insert\", \"id\": \"2\", \"status\": \"completed\"}, {\"content\": \"Fix query.py: Apply converters in bulk_create() method after insert\", \"id\": \"3\", \"status\": \"completed\"}, {\"content\": \"Create test to verify the fix works\", \"id\": \"4\", \"status\": \"pending\"}, {\"content\": \"Run relevant tests to verify fix\", \"id\": \"5\", \"status\": \"pending\"}]</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:04.896318Z",
+            "execution_start_time": "2026-11-04T02:57:04.896364Z",
+            "execution_finish_time": "2026-11-04T02:57:08.478505Z",
+            "queue_time_ms": 0.04720105789601803,
+            "api_time_ms": 3582.138836965896,
+            "total_time_ms": 3582.186038023792
+          },
+          "token_usage": {
+            "prompt_tokens": 25457,
+            "completion_tokens": 168
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 24982,
+            "prompt_n": 475,
+            "prompt_ms": 119.418,
+            "prompt_per_token_ms": 0.2514063157894737,
+            "prompt_per_second": 3977.6248136796794,
+            "predicted_n": 168,
+            "predicted_ms": 3405.675,
+            "predicted_per_token_ms": 20.393263473053892,
+            "predicted_per_second": 49.03580053880655
+          },
+          "target_output_tokens": 191
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-38",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 38,
+          "response": "<function=task_tracker>\n<parameter=command>plan</parameter>\n<parameter=task_list>[{\"content\": \"Understand the issue: returning_fields values not passed through database converters\", \"id\": \"1\", \"status\": \"completed\"}, {\"content\": \"Fix base.py: Apply converters in save() method after insert\", \"id\": \"2\", \"status\": \"completed\"}, {\"content\": \"Fix query.py: Apply converters in bulk_create() method after insert\", \"id\": \"3\", \"status\": \"completed\"}, {\"content\": \"Create test to verify the fix works\", \"id\": \"4\", \"status\": \"pending\"}, {\"content\": \"Run relevant tests to verify fix\", \"id\": \"5\", \"status\": \"pending\"}]</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:08.578604Z",
+            "execution_start_time": "2026-11-04T02:57:08.578677Z",
+            "execution_finish_time": "2026-11-04T02:57:12.170901Z",
+            "queue_time_ms": 0.07369101513177156,
+            "api_time_ms": 3592.2218770720065,
+            "total_time_ms": 3592.2955680871382
+          },
+          "token_usage": {
+            "prompt_tokens": 25896,
+            "completion_tokens": 168
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 25457,
+            "prompt_n": 439,
+            "prompt_ms": 90.778,
+            "prompt_per_token_ms": 0.20678359908883828,
+            "prompt_per_second": 4835.973473749145,
+            "predicted_n": 168,
+            "predicted_ms": 3442.843,
+            "predicted_per_token_ms": 20.61582634730539,
+            "predicted_per_second": 48.50642332514146
+          },
+          "target_output_tokens": 199
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-39",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 39,
+          "response": "<function=execute_bash>\n<parameter=command>\ngrep -n \"from_db_value\" /workspace/django/django/db/models/fields/__init__.py | head -30\n</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:12.250103Z",
+            "execution_start_time": "2026-11-04T02:57:12.250181Z",
+            "execution_finish_time": "2026-11-04T02:57:13.626223Z",
+            "queue_time_ms": 0.07780198939144611,
+            "api_time_ms": 1376.0418039746583,
+            "total_time_ms": 1376.1196059640497
+          },
+          "token_usage": {
+            "prompt_tokens": 26118,
+            "completion_tokens": 62
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 25896,
+            "prompt_n": 222,
+            "prompt_ms": 50.011,
+            "prompt_per_token_ms": 0.22527477477477478,
+            "prompt_per_second": 4439.023414848733,
+            "predicted_n": 62,
+            "predicted_ms": 1267.14,
+            "predicted_per_token_ms": 20.772786885245903,
+            "predicted_per_second": 48.139905614217845
+          },
+          "target_output_tokens": 978
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-40",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 40,
+          "response": "<function=execute_bash>\n<parameter=command>\npython3 /workspace/test_fix_issue.py\n</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:13.716390Z",
+            "execution_start_time": "2026-11-04T02:57:13.716437Z",
+            "execution_finish_time": "2026-11-04T02:57:14.951275Z",
+            "queue_time_ms": 0.047271023504436016,
+            "api_time_ms": 1234.8371159750968,
+            "total_time_ms": 1234.8843869986013
+          },
+          "token_usage": {
+            "prompt_tokens": 27063,
+            "completion_tokens": 43
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 26118,
+            "prompt_n": 945,
+            "prompt_ms": 283.239,
+            "prompt_per_token_ms": 0.2997238095238095,
+            "prompt_per_second": 3336.404944234375,
+            "predicted_n": 43,
+            "predicted_ms": 889.175,
+            "predicted_per_token_ms": 21.17083333333333,
+            "predicted_per_second": 47.23479629994096
+          },
+          "target_output_tokens": 56
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-41",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 41,
+          "response": "<function=execute_bash>\n<parameter=command>\ncd /workspace && python /workspace/test_fix_issue.py\n</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:15.689211Z",
+            "execution_start_time": "2026-11-04T02:57:15.689303Z",
+            "execution_finish_time": "2026-11-04T02:57:16.775326Z",
+            "queue_time_ms": 0.0940720783546567,
+            "api_time_ms": 1086.0216019209474,
+            "total_time_ms": 1086.115673999302
+          },
+          "token_usage": {
+            "prompt_tokens": 27214,
+            "completion_tokens": 46
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 27063,
+            "prompt_n": 151,
+            "prompt_ms": 64.347,
+            "prompt_per_token_ms": 0.4261390728476821,
+            "prompt_per_second": 2346.651747556219,
+            "predicted_n": 46,
+            "predicted_ms": 957.913,
+            "predicted_per_token_ms": 21.286955555555554,
+            "predicted_per_second": 46.97712631522905
+          },
+          "target_output_tokens": 63
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-42",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 42,
+          "response": "<function=execute_bash>\n<parameter=command>\ncd /workspace/django && python /workspace/test_fix_issue.py</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:22.076712Z",
+            "execution_start_time": "2026-11-04T02:57:22.076768Z",
+            "execution_finish_time": "2026-11-04T02:57:23.399899Z",
+            "queue_time_ms": 0.058650970458984375,
+            "api_time_ms": 1323.129223077558,
+            "total_time_ms": 1323.187874048017
+          },
+          "token_usage": {
+            "prompt_tokens": 27841,
+            "completion_tokens": 47
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 27214,
+            "prompt_n": 627,
+            "prompt_ms": 263.907,
+            "prompt_per_token_ms": 0.42090430622009567,
+            "prompt_per_second": 2375.836942559311,
+            "predicted_n": 47,
+            "predicted_ms": 991.48,
+            "predicted_per_token_ms": 21.55391304347826,
+            "predicted_per_second": 46.39528785250333
+          },
+          "target_output_tokens": 52
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-43",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 43,
+          "response": "<function=execute_bash>\n<parameter=command>\ncd /workspace/django && pip install -e . --no-cache-dir</parameter>\n<parameter=security_risk>MEDIUM</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:24.139821Z",
+            "execution_start_time": "2026-11-04T02:57:24.139874Z",
+            "execution_finish_time": "2026-11-04T02:57:25.315547Z",
+            "queue_time_ms": 0.054611009545624256,
+            "api_time_ms": 1175.6715460214764,
+            "total_time_ms": 1175.726157031022
+          },
+          "token_usage": {
+            "prompt_tokens": 28000,
+            "completion_tokens": 49
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 27841,
+            "prompt_n": 159,
+            "prompt_ms": 70.136,
+            "prompt_per_token_ms": 0.4411069182389937,
+            "prompt_per_second": 2267.0240675259497,
+            "predicted_n": 49,
+            "predicted_ms": 1040.537,
+            "predicted_per_token_ms": 21.677854166666666,
+            "predicted_per_second": 46.13002709178049
+          },
+          "target_output_tokens": 75
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-44",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 44,
+          "response": "<function=execute_bash>\n<parameter=command>\ncd /workspace/django && python test_fix_issue.py</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:26.053505Z",
+            "execution_start_time": "2026-11-04T02:57:26.053601Z",
+            "execution_finish_time": "2026-11-04T02:57:27.148495Z",
+            "queue_time_ms": 0.09786209557205439,
+            "api_time_ms": 1094.8922319803387,
+            "total_time_ms": 1094.9900940759107
+          },
+          "token_usage": {
+            "prompt_tokens": 28153,
+            "completion_tokens": 45
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 28000,
+            "prompt_n": 153,
+            "prompt_ms": 69.619,
+            "prompt_per_token_ms": 0.45502614379084966,
+            "prompt_per_second": 2197.675921802956,
+            "predicted_n": 45,
+            "predicted_ms": 960.073,
+            "predicted_per_token_ms": 21.81984090909091,
+            "predicted_per_second": 45.829848355281314
+          },
+          "target_output_tokens": 60
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-45",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 45,
+          "response": "<function=execute_bash>\n<parameter=command>\npython -c \"import django; print(django.__file__)\"</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:27.890414Z",
+            "execution_start_time": "2026-11-04T02:57:27.890503Z",
+            "execution_finish_time": "2026-11-04T02:57:29.053716Z",
+            "queue_time_ms": 0.090652029030025,
+            "api_time_ms": 1163.2122419541702,
+            "total_time_ms": 1163.3028939832002
+          },
+          "token_usage": {
+            "prompt_tokens": 28263,
+            "completion_tokens": 48
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 28153,
+            "prompt_n": 110,
+            "prompt_ms": 72.563,
+            "prompt_per_token_ms": 0.6596636363636363,
+            "prompt_per_second": 1515.9240935462976,
+            "predicted_n": 48,
+            "predicted_ms": 1023.785,
+            "predicted_per_token_ms": 21.782659574468084,
+            "predicted_per_second": 45.908076402760344
+          },
+          "target_output_tokens": 69
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-46",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 46,
+          "response": "<function=execute_bash>\n<parameter=command>\npython -c \"import django; print(django.__file__)\"</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:29.797721Z",
+            "execution_start_time": "2026-11-04T02:57:29.797826Z",
+            "execution_finish_time": "2026-11-04T02:57:31.829776Z",
+            "queue_time_ms": 0.10678195394575596,
+            "api_time_ms": 2031.9497080054134,
+            "total_time_ms": 2032.0564899593592
+          },
+          "token_usage": {
+            "prompt_tokens": 30461,
+            "completion_tokens": 48
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 28263,
+            "prompt_n": 2198,
+            "prompt_ms": 885.655,
+            "prompt_per_token_ms": 0.4029367606915378,
+            "prompt_per_second": 2481.779022305526,
+            "predicted_n": 48,
+            "predicted_ms": 1080.408,
+            "predicted_per_token_ms": 22.987404255319145,
+            "predicted_per_second": 43.50208439774604
+          },
+          "target_output_tokens": 75
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-47",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 47,
+          "response": "<function=execute_bash>\n<parameter=command>\npython -c \"import django; print(django.__file__)\"</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:32.581764Z",
+            "execution_start_time": "2026-11-04T02:57:32.581858Z",
+            "execution_finish_time": "2026-11-04T02:57:33.836500Z",
+            "queue_time_ms": 0.09541201870888472,
+            "api_time_ms": 1254.6402500011027,
+            "total_time_ms": 1254.7356620198116
+          },
+          "token_usage": {
+            "prompt_tokens": 30646,
+            "completion_tokens": 48
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 30461,
+            "prompt_n": 185,
+            "prompt_ms": 109.252,
+            "prompt_per_token_ms": 0.5905513513513513,
+            "prompt_per_second": 1693.332845165306,
+            "predicted_n": 48,
+            "predicted_ms": 1078.943,
+            "predicted_per_token_ms": 22.95623404255319,
+            "predicted_per_second": 43.56115197929826
+          },
+          "target_output_tokens": 75
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-48",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 48,
+          "response": "<function=execute_bash>\n<parameter=command>\npython3.10 -c \"import sys; print(sys.path)\"</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:34.741696Z",
+            "execution_start_time": "2026-11-04T02:57:34.741792Z",
+            "execution_finish_time": "2026-11-04T02:57:35.993248Z",
+            "queue_time_ms": 0.09771203622221947,
+            "api_time_ms": 1251.4546930324286,
+            "total_time_ms": 1251.5524050686508
+          },
+          "token_usage": {
+            "prompt_tokens": 30746,
+            "completion_tokens": 49
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 30646,
+            "prompt_n": 100,
+            "prompt_ms": 78.289,
+            "prompt_per_token_ms": 0.78289,
+            "prompt_per_second": 1277.318652684285,
+            "predicted_n": 49,
+            "predicted_ms": 1106.214,
+            "predicted_per_token_ms": 23.046125,
+            "predicted_per_second": 43.391242562469834
+          },
+          "target_output_tokens": 61
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-49",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 49,
+          "response": "<function=execute_bash>\n<parameter=command>\npython3.10 -c \"import django; print(django.__file__)\"</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:36.734192Z",
+            "execution_start_time": "2026-11-04T02:57:36.734248Z",
+            "execution_finish_time": "2026-11-04T02:57:38.218355Z",
+            "queue_time_ms": 0.05769205745309591,
+            "api_time_ms": 1484.1047209920362,
+            "total_time_ms": 1484.1624130494893
+          },
+          "token_usage": {
+            "prompt_tokens": 31238,
+            "completion_tokens": 52
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 30746,
+            "prompt_n": 492,
+            "prompt_ms": 227.616,
+            "prompt_per_token_ms": 0.46263414634146344,
+            "prompt_per_second": 2161.535217207929,
+            "predicted_n": 52,
+            "predicted_ms": 1187.401,
+            "predicted_per_token_ms": 23.28237254901961,
+            "predicted_per_second": 42.95094917386797
+          },
+          "target_output_tokens": 101
+        },
+        {
+          "request_id": "swebench__django__django-14007__minimax-step-50",
+          "task_id": "swebench__django__django-14007__minimax",
+          "step_id": 50,
+          "response": "<function=execute_bash>\n<parameter=command>\ncd /workspace/django/tests && python3 test_issue_reproduce.py</parameter>\n<parameter=security_risk>LOW</parameter>\n</function>",
+          "status": "success",
+          "worker_id": 1,
+          "timing_metadata": {
+            "queue_entry_time": "2026-11-04T02:57:38.967378Z",
+            "execution_start_time": "2026-11-04T02:57:38.967435Z",
+            "execution_finish_time": "2026-11-04T02:57:40.543160Z",
+            "queue_time_ms": 0.058631994761526585,
+            "api_time_ms": 1575.7231549359858,
+            "total_time_ms": 1575.7817869307473
+          },
+          "token_usage": {
+            "prompt_tokens": 32070,
+            "completion_tokens": 48
+          },
+          "error": null,
+          "backend_timings": {
+            "cache_n": 31238,
+            "prompt_n": 832,
+            "prompt_ms": 393.122,
+            "prompt_per_token_ms": 0.4725024038461539,
+            "prompt_per_second": 2116.39134925036,
+            "predicted_n": 48,
+            "predicted_ms": 1110.372,
+            "predicted_per_token_ms": 23.624936170212766,
+            "predicted_per_second": 42.328156689830074
+          },
+          "target_output_tokens": 57
+        }
+      ]
+    }
+  }
+}

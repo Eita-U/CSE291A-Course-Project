@@ -67,27 +67,54 @@ class QwenHTTPBackend:
         The FIFO scheduler validates top-level request fields. We validate
         protocol-specific settings here, and don't fabricate token counts.
         """
-        prompt = request["prompt"]
+        prompt = request.get("prompt")
+        messages = request.get("messages")
+
+        if (prompt is None) == (messages is None):
+            raise ValueError("Provide exactly one of prompt or messages")
+
         settings = dict(request.get("generation_settings", {}))
         if settings.get("stream") is True:
             raise ValueError("stream=True is unsupported; use a non-streaming request")
         settings.pop("stream", None)
 
+        if "prompt" in settings or "messages" in settings:
+            raise ValueError(
+                "Specify prompt/messages at the top level, not in generation_settings"
+            )
+
         if self.api_style == "openai":
-            body: dict[str, Any] = {
-                "messages": [{"role": "user", "content": prompt}],
-                "stream": False,
-            }
+            body: dict[str, Any] = dict(settings)
+
             if self.model is not None:
-                body["model"] = self.model
-            body.update(settings)
+                body.setdefault("model", self.model)
+
+            body["messages"] = (messages if messages is not None else [{"role": "user", "content": prompt}])
+            body["messages"] = [
+                {
+                    key: value
+                    for key, value in message.items()
+                    if not (
+                        key in {"name", "tool_calls", "tool_call_id"}
+                        and value is None
+                    )
+                }
+                for message in body["messages"]
+            ]
+            body["stream"] = False
         else:
-            # llama.cpp native /completion names this setting n_predict.
+            if messages is not None:
+                raise ValueError(
+                    "messages requires api_style='openai'; "
+                    "use /v1/chat/completions"
+                )
+
             if "max_tokens" in settings:
                 if "n_predict" in settings:
                     raise ValueError("Use either max_tokens or n_predict, not both")
                 settings["n_predict"] = settings.pop("max_tokens")
-            body = {"prompt": prompt, "stream": False, **settings}
+
+            body = {**settings, "prompt": prompt, "stream": False}
 
         try:
             response = await self._client.post(
@@ -142,7 +169,7 @@ class QwenHTTPBackend:
 
         if not isinstance(text, str):
             raise ValueError("Qwen API response must contain generated text as a string")
-        return {"response": text, "token_usage": usage}
+        return {"response": text, "token_usage": usage, "backend_timings": payload.get("timings", {})}
 
     async def aclose(self) -> None:
         """Close the internally-owned HTTP connection pool."""

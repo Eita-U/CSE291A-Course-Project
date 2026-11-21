@@ -6,6 +6,10 @@ import requests
 BASE = os.getenv('SERVER_URL', 'http://127.0.0.1:8080').rstrip('/')
 s = requests.Session()
 
+# Qwen3 reasons before answering, and reasoning counts toward max_tokens.
+# A low limit stops generation before the answer and leaves content empty.
+MAX_TOKENS = 1024
+
 def check(path):
     r = s.get(BASE + path, timeout=15)
     print(path, r.status_code, r.text[:350])
@@ -19,7 +23,7 @@ r.raise_for_status()
 model = r.json()['data'][0]['id']
 print('Model:', model)
 
-payload = {'model': model, 'messages': [{'role': 'user', 'content': 'Reply with exactly: ready'}], 'max_tokens': 64, 'temperature': 0}
+payload = {'model': model, 'messages': [{'role': 'user', 'content': 'Reply with exactly: ready'}], 'max_tokens': MAX_TOKENS, 'temperature': 0}
 r = s.post(BASE + '/v1/chat/completions', json=payload, timeout=180)
 r.raise_for_status()
 message = r.json()['choices'][0]['message']
@@ -33,7 +37,7 @@ payload = {
         'name': 'add', 'description': 'Add two integers',
         'parameters': {'type': 'object', 'properties': {'a': {'type': 'integer'}, 'b': {'type': 'integer'}}, 'required': ['a', 'b']}
     }}],
-    'tool_choice': 'required', 'max_tokens': 256, 'temperature': 0
+    'tool_choice': 'required', 'max_tokens': MAX_TOKENS, 'temperature': 0
 }
 r = s.post(BASE + '/v1/chat/completions', json=payload, timeout=180)
 r.raise_for_status()
