@@ -186,6 +186,10 @@ python -m examples.run_scheduler_trace --scheduler affinity --slots 2
 Each run writes `measurement/results/phase2/<run_id>/results.json` and prints
 its summary. Use `--hold-s 0` to test affinity without holding.
 
+For a quick check without the trace file, add `--synthetic`: 8 generated agents
+with 8 steps each, whose contexts grow by about 1,000 words per step and share
+no prefix. Change the size with `--agents`, `--steps` and `--words-per-step`.
+
 ## Scheduler interface
 
 ```python

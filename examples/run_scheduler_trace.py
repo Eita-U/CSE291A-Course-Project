@@ -8,6 +8,9 @@ the scheduler config and /metrics counters from before and after the run.
 
     python -m examples.run_scheduler_trace --scheduler affinity --slots 2
     python -m examples.run_scheduler_trace --scheduler fifo --slots 2
+
+--synthetic replays small generated sessions instead (no trace file needed),
+for a quick check in minutes rather than an hour.
 """
 
 import argparse
@@ -19,7 +22,10 @@ from pathlib import Path
 
 import httpx
 
+import pandas as pd
+
 from measurement.replay_trace import replay_trace
+from measurement.synthetic_sessions import synthetic_sessions
 from measurement.trace_loader import group_tasks, load_trace
 from scheduler import FIFOScheduler, SlotAffinityScheduler
 from scheduler.qwen_backend import QwenHTTPBackend
@@ -40,6 +46,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--trace", default="data/processed/trace_32k.parquet")
     parser.add_argument("--tasks-from", default=PHASE1_TASKS,
                         help="Results file whose task IDs select the sessions to replay")
+    parser.add_argument("--synthetic", action="store_true",
+                        help="Replay generated sessions instead of the trace")
+    parser.add_argument("--agents", type=int, default=8, help="Synthetic: number of agents")
+    parser.add_argument("--steps", type=int, default=8, help="Synthetic: steps per agent")
+    parser.add_argument("--words-per-step", type=int, default=1000,
+                        help="Synthetic: words of new context per step")
     parser.add_argument("--pre-gap-scale", type=float, default=1.0)
     parser.add_argument("--no-cache-prompt", action="store_true")
     parser.add_argument("--timeout", type=float, default=180.0, help="Per-request timeout (s)")
@@ -96,12 +108,16 @@ async def main() -> None:
     cache_prompt = not args.no_cache_prompt
     server = args.server.rstrip("/")
 
-    task_ids = list(json.loads(Path(args.tasks_from).read_text(encoding="utf-8"))["tasks"])
-    tasks = group_tasks(load_trace(args.trace))
-    missing = [t for t in task_ids if t not in tasks]
-    if missing:
-        raise SystemExit(f"{len(missing)} sessions from {args.tasks_from} are not in {args.trace}")
-    tasks = {t: tasks[t] for t in task_ids}
+    if args.synthetic:
+        sessions = synthetic_sessions(args.agents, args.steps, args.words_per_step)
+        tasks = {sid: pd.DataFrame(rows) for sid, rows in sessions.items()}
+    else:
+        task_ids = list(json.loads(Path(args.tasks_from).read_text(encoding="utf-8"))["tasks"])
+        tasks = group_tasks(load_trace(args.trace))
+        missing = [t for t in task_ids if t not in tasks]
+        if missing:
+            raise SystemExit(f"{len(missing)} sessions from {args.tasks_from} are not in {args.trace}")
+        tasks = {t: tasks[t] for t in task_ids}
 
     if args.scheduler == "affinity":
         check_server_slots(server, args.slots)
@@ -126,8 +142,13 @@ async def main() -> None:
     config = {
         "scheduler": args.scheduler, "concurrency": args.slots, "slots": args.slots,
         "cache_prompt": cache_prompt, "pre_gap_scale": args.pre_gap_scale,
-        "request_timeout_s": args.timeout, "tasks_from": args.tasks_from, "n_tasks": len(tasks),
+        "request_timeout_s": args.timeout, "n_tasks": len(tasks),
     }
+    if args.synthetic:
+        config.update(workload="synthetic", agents=args.agents, steps=args.steps,
+                      words_per_step=args.words_per_step)
+    else:
+        config.update(workload="trace", trace=args.trace, tasks_from=args.tasks_from)
     if args.scheduler == "affinity":
         config.update(hold_s=args.hold_s, max_skips=args.max_skips)
     results = {
@@ -143,7 +164,8 @@ async def main() -> None:
     results["summary"] = summarize(results, metrics_before, metrics_after)
 
     run_id = args.run_id or (
-        f"{args.scheduler}-slots-{args.slots}"
+        ("synthetic-" if args.synthetic else "")
+        + f"{args.scheduler}-slots-{args.slots}"
         + (f"-hold-{args.hold_s}-skips-{args.max_skips}" if args.scheduler == "affinity" else "")
     )
     output = Path(f"measurement/results/phase2/{run_id}/results.json")
