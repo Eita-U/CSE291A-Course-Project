@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 from dataclasses import dataclass, field
-from typing import Any, Literal, TypedDict
+from typing import Any, Literal, NotRequired, TypedDict
 
 
 RequestStatus = Literal["success", "failed", "timeout", "cancelled"]
@@ -28,6 +28,10 @@ class InferenceResponse(TypedDict):
     token_usage: dict[str, int]
     backend_timings: dict[str, Any]
     error: str | None
+    # Set only by SlotAffinityScheduler.
+    slot_id: NotRequired[int | None]
+    slot_hit: NotRequired[bool]
+    skips: NotRequired[int]
 
 
 @dataclass(frozen=True)

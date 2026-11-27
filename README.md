@@ -152,6 +152,40 @@ organized under:
 - `measurement/results/prefix/`: three sessions replayed individually with
   prefix reuse ON/OFF, also used for context-growth analysis.
 
+## Phase 2: slot-affinity scheduler
+
+`scheduler/slot_affinity.py` keeps each agent's context in the same llama.cpp
+slot so its next step reuses the cached prefix. FIFO hands a freed slot to
+whichever request is next, which overwrites the previous agent's context.
+
+- Every request is pinned to a server slot with `id_slot`.
+- After a step finishes, its slot is held for `--hold-s` seconds (default 2)
+  for that agent's next step, which arrives after its tool wait.
+- An agent without a slot overwrites an empty slot first, then the least
+  recently used one, never a held slot.
+- A request skipped `--max-skips` times (default 10) takes the next free slot,
+  held or not.
+
+Results add `slot_id`, `slot_hit` and `skips` per request, plus a `summary`
+with cache reuse from `/metrics`. `examples/run_scheduler_trace.py` replays the
+same 20 sessions as the Phase 1 concurrency experiment by default.
+
+Run on EC2 from the repository root, with the trace and dependencies from the
+section above. Start a fresh server for each run, with `PARALLEL` equal to
+`--slots` and `CTX_SIZE` equal to `32768 * PARALLEL`:
+
+```bash
+# Terminal 1
+CTX_SIZE=65536 PARALLEL=2 bash inference_setup/start_server.sh
+
+# Terminal 2: one of
+python -m examples.run_scheduler_trace --scheduler fifo --slots 2
+python -m examples.run_scheduler_trace --scheduler affinity --slots 2
+```
+
+Each run writes `measurement/results/phase2/<run_id>/results.json` and prints
+its summary. Use `--hold-s 0` to test affinity without holding.
+
 ## Scheduler interface
 
 ```python

@@ -24,6 +24,19 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _validate_result(result: Any) -> dict[str, int]:
+    """Check a backend result and return its token usage."""
+    if not isinstance(result, dict) or not isinstance(result.get("response"), str):
+        raise ValueError("Backend must return a dictionary with a string response")
+    usage = result.get("token_usage", {})
+    if not isinstance(usage, dict) or any(
+        not isinstance(k, str) or type(v) is not int or v < 0
+        for k, v in usage.items()
+    ):
+        raise ValueError("Backend token_usage must contain non-negative integer counts")
+    return usage
+
+
 @dataclass
 class _Pending:
     request: InferenceRequest
@@ -33,6 +46,31 @@ class _Pending:
     dispatched_at: float | None = None
     dispatched_utc: str | None = None
     worker_id: int | None = None
+
+
+def _build_response(
+    item: _Pending, status: RequestStatus, response: str | None = None,
+    token_usage: dict[str, int] | None = None, backend_timings: dict[str, Any] | None = None, error: str | None = None,
+) -> InferenceResponse:
+    finished_at, finished_utc = time.perf_counter(), _utc_now()
+    dispatch = item.dispatched_at
+    return {
+        "request_id": item.request.request_id,
+        "task_id": item.request.task_id,
+        "step_id": item.request.step_id,
+        "response": response, "status": status,
+        "worker_id": item.worker_id,
+        "timing_metadata": {
+            "queue_entry_time": item.queued_utc,
+            "execution_start_time": item.dispatched_utc,
+            "execution_finish_time": finished_utc,
+            "queue_time_ms": ((dispatch if dispatch is not None else finished_at) - item.queued_at) * 1000,
+            "api_time_ms": 0.0 if dispatch is None else (finished_at - dispatch) * 1000,
+            "total_time_ms": (finished_at - item.queued_at) * 1000,
+        },
+        "token_usage": dict(token_usage or {}), "error": error,
+        "backend_timings": dict(backend_timings or {}),
+    }
 
 
 class FIFOScheduler:
@@ -114,25 +152,7 @@ class FIFOScheduler:
         self, item: _Pending, status: RequestStatus, response: str | None = None,
         token_usage: dict[str, int] | None = None, backend_timings: dict[str, Any] | None = None, error: str | None = None,
     ) -> None:
-        finished_at, finished_utc = time.perf_counter(), _utc_now()
-        dispatch = item.dispatched_at
-        result: InferenceResponse = {
-            "request_id": item.request.request_id,
-            "task_id": item.request.task_id,
-            "step_id": item.request.step_id,
-            "response": response, "status": status,
-            "worker_id": item.worker_id,
-            "timing_metadata": {
-                "queue_entry_time": item.queued_utc,
-                "execution_start_time": item.dispatched_utc,
-                "execution_finish_time": finished_utc,
-                "queue_time_ms": ((dispatch if dispatch is not None else finished_at) - item.queued_at) * 1000,
-                "api_time_ms": 0.0 if dispatch is None else (finished_at - dispatch) * 1000,
-                "total_time_ms": (finished_at - item.queued_at) * 1000,
-            },
-            "token_usage": dict(token_usage or {}), "error": error,
-            "backend_timings": dict(backend_timings or {}),
-        }
+        result = _build_response(item, status, response, token_usage, backend_timings, error)
         self._pending.pop(item.request.request_id, None)
         if not item.future.done():
             item.future.set_result(result)
@@ -153,14 +173,7 @@ class FIFOScheduler:
                     # including when the backend completes without suspending.
                     async with asyncio.timeout(self.request_timeout_s):
                         result = await self.backend.generate(item.request.to_dict())
-                    if not isinstance(result, dict) or not isinstance(result.get("response"), str):
-                        raise ValueError("Backend must return a dictionary with a string response")
-                    usage = result.get("token_usage", {})
-                    if not isinstance(usage, dict) or any(
-                        not isinstance(k, str) or type(v) is not int or v < 0
-                        for k, v in usage.items()
-                    ):
-                        raise ValueError("Backend token_usage must contain non-negative integer counts")
+                    usage = _validate_result(result)
                 except TimeoutError as exc:
                     self._finish(item, "timeout", error=str(exc) or "Backend request timed out")
                 except asyncio.CancelledError:
